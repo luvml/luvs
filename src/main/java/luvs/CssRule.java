@@ -17,6 +17,15 @@ public class CssRule implements DelegatedCharSeq {
         this.selector = selector;
         this.properties = properties;
     }
+    
+  /**
+     * Creates a new CSS rule.
+     * @param selector The CSS selector.
+     * @param properties The CSS properties for this rule.
+     */
+    public static CssRule rule(CharSequence selector, CssProperty... properties) {
+        return new CssRule(selector, properties);
+    }   
 
     /**
      * Renders the rule into a formatted CSS string with indentation.

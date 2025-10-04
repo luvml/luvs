@@ -9,17 +9,17 @@ import luvx.DelegatedCharSeq;
  * Create with: style(rule1, rule2, keyframes1, ...)
  * Use with: E.style(myStyle)
  */
-public final class Style implements DelegatedCharSeq {
+public final class CssRules implements DelegatedCharSeq {
 
     private final CssRule[] rules;
     private final Keyframes[] keyframes;
 
-    public Style(CssRule... rules) {
+    public CssRules(CssRule... rules) {
         this.rules = rules;
         this.keyframes = new Keyframes[0];
     }
 
-    public Style(Object... items) {
+    public CssRules(Object... items) {
         this.rules = Arrays.stream(items)
             .filter(item -> item instanceof CssRule)
             .map(item -> (CssRule) item)
@@ -53,14 +53,16 @@ public final class Style implements DelegatedCharSeq {
     /**
      * Factory method for creating styles.
      */
-    public static Style style(CssRule... rules) {
-        return new Style(rules);
+    public static CssRules rules(CssRule... rules) {
+        return new CssRules(rules);
     }
 
     /**
      * Factory method for creating styles with keyframes.
+     * @deprecated not a nice design to be honest, temporarily in place
      */
-    public static Style style(Object... items) {
-        return new Style(items);
+    @Deprecated
+    public static CssRules rules(Object... items) {
+        return new CssRules(items);
     }
 }
