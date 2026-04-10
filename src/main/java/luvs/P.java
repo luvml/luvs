@@ -11,9 +11,16 @@ import luvs.values.*;
 public final class P {
 
     private P() {} // Utility class
-    
+
+    /** Converts CharSequence to string, using delegatedCharSeqVal() for DelegatedCharSeq objects */
+    private static String toStr(CharSequence value) {
+        return (value instanceof luvx.DelegatedCharSeq)
+            ? ((luvx.DelegatedCharSeq) value).delegatedCharSeqVal()
+            : value.toString();
+    }
+
     private static String joinValues(CharSequence... values) {
-        return Stream.of(values).map(CharSequence::toString).collect(Collectors.joining(" "));
+        return Stream.of(values).map(P::toStr).collect(Collectors.joining(" "));
     }
 
     public static CssProperty prop(String name, CharSequence value) {
@@ -25,7 +32,7 @@ public final class P {
      * Usage: background_color(important(PRIMARY))
      */
     public static String important(CharSequence value) {
-        return value + " !important";
+        return toStr(value) + " !important";
     }
     
     // --- Color & Background ---
@@ -106,7 +113,7 @@ public final class P {
      * @param color shadow color
      */
     public static CssProperty box_shadow(CharSequence offsetX, CharSequence offsetY, CharSequence blurRadius, CharSequence color) {
-        return prop("box-shadow", offsetX + " " + offsetY + " " + blurRadius + " " + color);
+        return prop("box-shadow", toStr(offsetX) + " " + toStr(offsetY) + " " + toStr(blurRadius) + " " + toStr(color));
     }
 
     /**
@@ -118,7 +125,7 @@ public final class P {
      * @param color shadow color
      */
     public static CssProperty box_shadow(CharSequence offsetX, CharSequence offsetY, CharSequence blurRadius, CharSequence spreadRadius, CharSequence color) {
-        return prop("box-shadow", offsetX + " " + offsetY + " " + blurRadius + " " + spreadRadius + " " + color);
+        return prop("box-shadow", toStr(offsetX) + " " + toStr(offsetY) + " " + toStr(blurRadius) + " " + toStr(spreadRadius) + " " + toStr(color));
     }
 
     // --- Layout ---
@@ -183,7 +190,7 @@ public final class P {
      * @return The string "repeat(count, trackSize)"
      */
     public static String grid_repeat(CharSequence count, CharSequence trackSize) {
-        return "repeat(" + count + ", " + trackSize + ")";
+        return "repeat(" + toStr(count) + ", " + toStr(trackSize) + ")";
     }
 
     /**
@@ -193,7 +200,7 @@ public final class P {
      * @return The string "minmax(min, max)"
      */
     public static String grid_minmax(CharSequence min, CharSequence max) {
-        return "minmax(" + min + ", " + max + ")";
+        return "minmax(" + toStr(min) + ", " + toStr(max) + ")";
     }
 
     // --- Overflow & Cursor ---
@@ -229,7 +236,7 @@ public final class P {
      * @param duration duration (e.g., "0.3s", "200ms")
      */
     public static CssProperty transition(CharSequence property, CharSequence duration) {
-        return prop("transition", property + " " + duration);
+        return prop("transition", toStr(property) + " " + toStr(duration));
     }
 
     /**
@@ -239,7 +246,7 @@ public final class P {
      * @param timingFunction timing function (e.g., "ease", "linear", "ease-in-out")
      */
     public static CssProperty transition(CharSequence property, CharSequence duration, CharSequence timingFunction) {
-        return prop("transition", property + " " + duration + " " + timingFunction);
+        return prop("transition", toStr(property) + " " + toStr(duration) + " " + toStr(timingFunction));
     }
 
     /**
@@ -247,7 +254,7 @@ public final class P {
      * Usage: transition(trans("background", "0.3s"), trans("transform", "0.2s"))
      */
     public static String trans(CharSequence property, CharSequence duration) {
-        return property + " " + duration;
+        return toStr(property) + " " + toStr(duration);
     }
 
     /**
@@ -255,7 +262,7 @@ public final class P {
      * Usage: trans("background", "0.3s", "ease-in-out")
      */
     public static String trans(CharSequence property, CharSequence duration, CharSequence timingFunction) {
-        return property + " " + duration + " " + timingFunction;
+        return toStr(property) + " " + toStr(duration) + " " + toStr(timingFunction);
     }
 
     /**
@@ -273,7 +280,7 @@ public final class P {
         }
         java.util.List<String> transitions = new java.util.ArrayList<>();
         for (int i = 0; i < propertyDurationPairs.length; i += 2) {
-            transitions.add(propertyDurationPairs[i] + " " + propertyDurationPairs[i + 1]);
+            transitions.add(toStr(propertyDurationPairs[i]) + " " + toStr(propertyDurationPairs[i + 1]));
         }
         return prop("transition", String.join(", ", transitions));
     }
@@ -292,7 +299,7 @@ public final class P {
      * @param duration duration (e.g., s(0.5), ms(300))
      */
     public static CssProperty animation(CharSequence name, CharSequence duration) {
-        return prop("animation", name + " " + duration);
+        return prop("animation", toStr(name) + " " + toStr(duration));
     }
 
     /**
@@ -303,7 +310,7 @@ public final class P {
      * @param timingFunction timing function (e.g., "ease", "linear", "ease-in-out")
      */
     public static CssProperty animation(CharSequence name, CharSequence duration, CharSequence timingFunction) {
-        return prop("animation", name + " " + duration + " " + timingFunction);
+        return prop("animation", toStr(name) + " " + toStr(duration) + " " + toStr(timingFunction));
     }
 
     /**
@@ -315,7 +322,7 @@ public final class P {
      * @param delay delay before animation starts
      */
     public static CssProperty animation(CharSequence name, CharSequence duration, CharSequence timingFunction, CharSequence delay) {
-        return prop("animation", name + " " + duration + " " + timingFunction + " " + delay);
+        return prop("animation", toStr(name) + " " + toStr(duration) + " " + toStr(timingFunction) + " " + toStr(delay));
     }
 
     public static CssProperty animation_name(CharSequence value) { return prop("animation-name", value); }

@@ -23,4 +23,9 @@ public final class Length implements CssUnit {
     public String getUnit() {
         return unit.getSuffix();
     }
+
+    @Override
+    public String toString() {
+        return delegatedCharSeqVal();
+    }
 }

@@ -21,4 +21,9 @@ public enum FlexDirection implements DelegatedCharSeq {
     public String delegatedCharSeqVal() {
         return value;
     }
+
+    @Override
+    public String toString() {
+        return value;
+    }
 }

@@ -105,6 +105,9 @@ public final class Selector implements CharSequence,
                 if (part instanceof CssClass) {
                     return "." + ((CssClass) part).getClassName();
                 }
+                if (part instanceof luvx.DelegatedCharSeq) {
+                    return ((luvx.DelegatedCharSeq) part).delegatedCharSeqVal();
+                }
                 return part.toString();
             })
             .reduce("", (a, b) -> a.isEmpty() ? b : a + " " + b)

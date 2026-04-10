@@ -30,7 +30,10 @@ public final class CssProperty implements DelegatedCharSeq {
 
     @Override
     public String delegatedCharSeqVal() {
-        return name + ": " + value + ";";
+        String valueStr = (value instanceof DelegatedCharSeq)
+            ? ((DelegatedCharSeq) value).delegatedCharSeqVal()
+            : value.toString();
+        return name + ": " + valueStr + ";";
     }
 
     @Override
