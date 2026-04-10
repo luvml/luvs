@@ -6,8 +6,18 @@ import luvx.DelegatedCharSeq;
  * Type-safe HTML element tags for use in CSS selectors.
  * Implements DelegatedCharSeq to work seamlessly with selector varargs.
  */
-public enum HtmlTag implements DelegatedCharSeq {
+public enum HtmlTag implements DelegatedCharSeq,
+                                AttributeSelector,
+                                PseudoClassMixin,
+                                NegatedPseudoClassMixin,
+                                PseudoElementMixin,
+                                CombinatorMixin {
+    // Special CSS selectors
+    $root,
+    $all,  // Universal selector: *
+
     // Common elements
+    body,
     div, span, p, a,
     h1, h2, h3, h4, h5, h6,
     ul, ol, li,
@@ -25,7 +35,20 @@ public enum HtmlTag implements DelegatedCharSeq {
 
     @Override
     public String delegatedCharSeqVal() {
-        return name();
+        return switch(this){
+            case $all -> "*";
+            case $root -> ":root";
+            default -> name();
+        };
+    }
+
+    @Override
+    public CharSequence getSelectorString() {
+        return delegatedCharSeqVal();
+    }
+    
+    public CssRule ____(CssProperty... properties) {
+        return asSelector().____(properties);
     }
 
     // ========== DSL Chaining Methods ==========
@@ -36,6 +59,26 @@ public enum HtmlTag implements DelegatedCharSeq {
      */
     public Selector asSelector() {
         return Selector.selector(this);
+    }
+
+    /**
+     * Compound selector: tag.className (no space)
+     * Usage: tr.and(categorized_row).hover() → "tr.categorized_row:hover"
+     */
+    public Selector and(CssClass cssClass) {
+        return Selector.selector(this.toString() + cssClass.getSelector());
+    }
+
+    /**
+     * Compound selector with multiple classes: tag.class1.class2 (no spaces)
+     * Usage: div.and(active, selected) → "div.active.selected"
+     */
+    public Selector and(CssClass... cssClasses) {
+        StringBuilder sb = new StringBuilder(this.toString());
+        for (CssClass cls : cssClasses) {
+            sb.append(cls.getSelector());
+        }
+        return Selector.selector(sb.toString());
     }
 
     /**
@@ -54,124 +97,122 @@ public enum HtmlTag implements DelegatedCharSeq {
         return Selector.selector(parent, this);
     }
 
+    // Pseudo-class, negated pseudo-class, and pseudo-element methods inherited from mixin interfaces
+    // Attribute selector methods inherited from AttributeSelector interface
+
+    // ========== Common Input Type Shortcuts ==========
+    // Shorthand methods for frequently used input[type="..."] selectors
+
     /**
-     * Pseudo-class :hover
+     * input[type="text"]
      */
-    public Selector hover() {
-        return Selector.selector(this + ":hover");
+    public Selector typeText() {
+        return __type("text");
     }
 
     /**
-     * Pseudo-class :focus
+     * input[type="number"]
      */
-    public Selector focus() {
-        return Selector.selector(this + ":focus");
+    public Selector typeNumber() {
+        return __type("number");
     }
 
     /**
-     * Pseudo-class :active
+     * input[type="email"]
      */
-    public Selector active() {
-        return Selector.selector(this + ":active");
+    public Selector typeEmail() {
+        return __type("email");
     }
 
     /**
-     * Pseudo-class :first-child
+     * input[type="password"]
      */
-    public Selector firstChild() {
-        return Selector.selector(this + ":first-child");
+    public Selector typePassword() {
+        return __type("password");
     }
 
     /**
-     * Pseudo-class :last-child
+     * input[type="checkbox"]
      */
-    public Selector lastChild() {
-        return Selector.selector(this + ":last-child");
+    public Selector typeCheckbox() {
+        return __type("checkbox");
     }
 
     /**
-     * Pseudo-class :nth-child(n)
+     * input[type="radio"]
      */
-    public Selector nthChild(CharSequence n) {
-        return Selector.selector(this + ":nth-child(" + n + ")");
+    public Selector typeRadio() {
+        return __type("radio");
     }
 
     /**
-     * Pseudo-class :nth-of-type(n)
+     * input[type="date"]
      */
-    public Selector nthOfType(CharSequence n) {
-        return Selector.selector(this + ":nth-of-type(" + n + ")");
+    public Selector typeDate() {
+        return __type("date");
     }
 
     /**
-     * Pseudo-class :not(selector)
-     * Auto-detects CssClass and adds dot prefix
+     * input[type="time"]
      */
-    public Selector not(CharSequence selector) {
-        if (selector instanceof CssClass) {
-            return Selector.selector(this + ":not(" + ((CssClass) selector).getSelector() + ")");
-        }
-        return Selector.selector(this + ":not(" + selector + ")");
-    }
-
-    // ========== Pseudo-elements ==========
-
-    /**
-     * Pseudo-element ::before
-     */
-    public Selector before() {
-        return Selector.selector(this + "::before");
+    public Selector typeTime() {
+        return __type("time");
     }
 
     /**
-     * Pseudo-element ::after
+     * input[type="file"]
      */
-    public Selector after() {
-        return Selector.selector(this + "::after");
+    public Selector typeFile() {
+        return __type("file");
     }
 
     /**
-     * Pseudo-element ::first-line
+     * input[type="range"]
      */
-    public Selector firstLine() {
-        return Selector.selector(this + "::first-line");
+    public Selector typeRange() {
+        return __type("range");
     }
 
     /**
-     * Pseudo-element ::first-letter
+     * input[type="search"]
      */
-    public Selector firstLetter() {
-        return Selector.selector(this + "::first-letter");
+    public Selector typeSearch() {
+        return __type("search");
     }
 
     /**
-     * Pseudo-element ::selection
+     * input[type="tel"]
      */
-    public Selector selection() {
-        return Selector.selector(this + "::selection");
+    public Selector typeTel() {
+        return __type("tel");
     }
 
     /**
-     * Pseudo-element ::placeholder
+     * input[type="url"]
      */
-    public Selector placeholder() {
-        return Selector.selector(this + "::placeholder");
-    }
-
-    // ========== Attribute Selectors ==========
-
-    /**
-     * Attribute selector [attr]
-     */
-    public Selector withAttr(CharSequence attr) {
-        return Selector.selector(this + "[" + attr + "]");
+    public Selector typeUrl() {
+        return __type("url");
     }
 
     /**
-     * Attribute selector [attr="value"]
+     * button[type="submit"] or input[type="submit"]
      */
-    public Selector withAttr(CharSequence attr, CharSequence value) {
-        return Selector.selector(this + "[" + attr + "=\"" + value + "\"]");
+    public Selector typeSubmit() {
+        return __type("submit");
+    }
+
+    /**
+     * button[type="button"] or input[type="button"]
+     */
+    public Selector typeButton() {
+        return __type("button");
+    }
+
+    /**
+     * button[type="reset"] or input[type="reset"]
+     */
+    public Selector typeReset() {
+        return __type("reset");
     }
 
     /**

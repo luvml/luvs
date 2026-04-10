@@ -1,6 +1,7 @@
 package luvs;
 
 import luvs.values.*;
+import static luvs.CssProp.*;
 
 /**
  * Static factory for creating CSS Values (V).
@@ -18,6 +19,19 @@ public final class V {
     public static CssUnit percent(Number value) { return new Length(value, LengthUnit.PERCENT); }
     public static CssUnit vh(Number value) { return new Length(value, LengthUnit.VH); }
     public static CssUnit vw(Number value) { return new Length(value, LengthUnit.VW); }
+
+    // ========== Time Units ==========
+
+    public static CssUnit s(Number value) { return new Time(value, TimeUnit.S); }
+    public static CssUnit ms(Number value) { return new Time(value, TimeUnit.MS); }
+
+    // ========== Grid Units ==========
+
+    /**
+     * Creates a CSS grid fractional unit (fr).
+     * Usage: grid_template_columns(fr(1), fr(2)) → "1fr 2fr"
+     */
+    public static GridUnit fr(Number value) { return new GridUnit(value.doubleValue()); }
 
     // ========== Angle Units ==========
 
@@ -329,8 +343,15 @@ public final class V {
         BOLDER = FontWeight.BOLDER,
         LIGHTER = FontWeight.LIGHTER,
         W100 = FontWeight.W100,
+        W200 = FontWeight.W200,
+        W300 = FontWeight.W300,  
         W400 = FontWeight.W400,
-        W700 = FontWeight.W700;
+        W500 = FontWeight.W500,
+        W600 = FontWeight.W600,
+        W700 = FontWeight.W700,
+        W800 = FontWeight.W800,
+        W900 = FontWeight.W900
+        ;
 
     // FlexDirection (all values - small enum)
     public static final FlexDirection
@@ -343,6 +364,7 @@ public final class V {
     public static final JustifyContent
         FLEX_START = JustifyContent.FLEX_START,
         FLEX_END = JustifyContent.FLEX_END,
+        JC_CENTER = JustifyContent.CENTER,
         SPACE_BETWEEN = JustifyContent.SPACE_BETWEEN,
         SPACE_AROUND = JustifyContent.SPACE_AROUND,
         SPACE_EVENLY = JustifyContent.SPACE_EVENLY;
@@ -363,6 +385,71 @@ public final class V {
         OV_AUTO = Overflow.AUTO,
         CLIP = Overflow.CLIP;
 
+    // TextDecoration (common values)
+    public static final TextDecoration
+        TD_NONE = TextDecoration.NONE,
+        UNDERLINE = TextDecoration.UNDERLINE,
+        LINE_THROUGH = TextDecoration.LINE_THROUGH;
+
+    // BorderStyle (common values)
+    public static final BorderStyle
+        BS_NONE = BorderStyle.NONE,
+        SOLID = BorderStyle.SOLID,
+        DASHED = BorderStyle.DASHED,
+        DOTTED = BorderStyle.DOTTED;
+
+    // BorderCollapse (all values - small enum)
+    public static final BorderCollapse
+        BC_COLLAPSE = BorderCollapse.COLLAPSE,
+        BC_SEPARATE = BorderCollapse.SEPARATE;
+
+    // BoxSizing (all values - small enum)
+    public static final BoxSizing
+        CONTENT_BOX = BoxSizing.CONTENT_BOX,
+        BORDER_BOX = BoxSizing.BORDER_BOX;
+
+    // Resize (all values - small enum)
+    public static final Resize
+        RS_NONE = Resize.NONE,
+        RS_BOTH = Resize.BOTH,
+        HORIZONTAL = Resize.HORIZONTAL,
+        VERTICAL = Resize.VERTICAL;
+
+    // ObjectFit (all values - small enum)
+    public static final ObjectFit
+        OF_FILL = ObjectFit.FILL,
+        OF_CONTAIN = ObjectFit.CONTAIN,
+        OF_COVER = ObjectFit.COVER,
+        OF_NONE = ObjectFit.NONE,
+        SCALE_DOWN = ObjectFit.SCALE_DOWN;
+
+    // FontStyle (all values - small enum)
+    public static final FontStyle
+        FS_NORMAL = FontStyle.NORMAL,
+        FS_ITALIC = FontStyle.ITALIC,
+        FS_OBLIQUE = FontStyle.OBLIQUE;
+
+    // WhiteSpace (all values - small enum)
+    public static final WhiteSpace
+        WS_NORMAL = WhiteSpace.NORMAL,
+        WS_NOWRAP = WhiteSpace.NOWRAP,
+        WS_PRE = WhiteSpace.PRE,
+        WS_PRE_WRAP = WhiteSpace.PRE_WRAP,
+        WS_PRE_LINE = WhiteSpace.PRE_LINE;
+
+    // FlexWrap (all values - small enum)
+    public static final FlexWrap
+        FW_NOWRAP = FlexWrap.NOWRAP,
+        FW_WRAP = FlexWrap.WRAP,
+        FW_WRAP_REVERSE = FlexWrap.WRAP_REVERSE;
+
+    // Flex (common values)
+    public static final Flex
+        FLEX_1 = Flex.ONE,
+        FLEX_0 = Flex.ZERO,
+        FLEX_AUTO = Flex.AUTO,
+        FLEX_NONE = Flex.NONE;
+
     // Cursor (common values only - for exhaustive list use Cursor enum directly)
     public static final Cursor
         POINTER = Cursor.POINTER,
@@ -373,4 +460,64 @@ public final class V {
         NOT_ALLOWED = Cursor.NOT_ALLOWED,
         GRAB = Cursor.GRAB,
         GRABBING = Cursor.GRABBING;
+
+    // GridRepeatMode (all values - small enum)
+    public static final GridRepeatMode
+        AUTO_FIT = GridRepeatMode.AUTO_FIT,
+        AUTO_FILL = GridRepeatMode.AUTO_FILL;
+
+    // InputType (common values - for exhaustive list use InputType enum directly)
+    public static final InputType
+        INPUT_TEXT = InputType.TEXT,
+        INPUT_NUMBER = InputType.NUMBER,
+        INPUT_EMAIL = InputType.EMAIL,
+        INPUT_PASSWORD = InputType.PASSWORD,
+        INPUT_CHECKBOX = InputType.CHECKBOX,
+        INPUT_RADIO = InputType.RADIO,
+        INPUT_DATE = InputType.DATE,
+        INPUT_TIME = InputType.TIME,
+        INPUT_FILE = InputType.FILE,
+        INPUT_RANGE = InputType.RANGE,
+        INPUT_SEARCH = InputType.SEARCH,
+        INPUT_TEL = InputType.TEL,
+        INPUT_URL = InputType.URL,
+        INPUT_SUBMIT = InputType.SUBMIT,
+        INPUT_BUTTON = InputType.BUTTON,
+        INPUT_RESET = InputType.RESET;
+
+    // TimingFunction (all values - small enum)
+    public static final TimingFunction
+        EASE = TimingFunction.EASE,
+        LINEAR = TimingFunction.LINEAR,
+        EASE_IN = TimingFunction.EASE_IN,
+        EASE_OUT = TimingFunction.EASE_OUT,
+        EASE_IN_OUT = TimingFunction.EASE_IN_OUT,
+        STEP_START = TimingFunction.STEP_START,
+        STEP_END = TimingFunction.STEP_END;
+
+    // ========== Gradient Color Stop Helper ==========
+
+    /**
+     * Creates a gradient color stop with percentage.
+     * Usage: stop(PRIMARY, 0) → "PRIMARY 0%"
+     * Usage: stop(PRIMARY, 50) → "PRIMARY 50%"
+     */
+    public static String stop(CharSequence color, Number percentage) {
+        return color + " " + percentage + "%";
+    }
+
+    /**
+     * Creates a gradient color stop with explicit position.
+     * Usage: stop(PRIMARY, "10px") → "PRIMARY 10px"
+     * Usage: stop(PRIMARY, percent(25)) → "PRIMARY 25%"
+     */
+    public static String stop(CharSequence color, CharSequence position) {
+        return color + " " + position;
+    }
+
+    // ========== CSS Property Name Constants ==========
+    // Re-export from CssProp for convenience
+
+    // Note: CssProp constants are already imported via static import above
+    // They are directly accessible: BACKGROUND, TRANSFORM, ALL, etc.
 }

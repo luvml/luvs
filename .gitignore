@@ -103,3 +103,6 @@ ai-context-guide.md
 # reference_docs_and_examples
 # notes
 test-logs
+
+# PRP folder (may contain user-internal/session data)
+prp

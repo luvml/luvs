@@ -8,7 +8,7 @@ import luvx.DelegatedCharSeq;
  * Represents an immutable CSS rule, containing a selector and a set of properties.
  * e.g., ".container { color: blue; font-size: 16px; }"
  */
-public class CssRule implements DelegatedCharSeq {
+public non-sealed class CssRule implements CssRuleFrag {
 
     private final CharSequence selector;
     private final CssProperty[] properties;
@@ -30,8 +30,8 @@ public class CssRule implements DelegatedCharSeq {
     /**
      * Renders the rule into a formatted CSS string with indentation.
      */
-    
-    
+
+
     @Override
     public String delegatedCharSeqVal() {
         StringBuilder sb = new StringBuilder();
@@ -45,5 +45,10 @@ public class CssRule implements DelegatedCharSeq {
         }
         sb.append("}");
         return sb.toString();
+    }
+
+    @Override
+    public String toString() {
+        return delegatedCharSeqVal();
     }
 }
