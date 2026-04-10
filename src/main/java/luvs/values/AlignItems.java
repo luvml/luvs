@@ -22,4 +22,9 @@ public enum AlignItems implements DelegatedCharSeq {
     public String delegatedCharSeqVal() {
         return value;
     }
+
+    @Override
+    public String toString() {
+        return value;
+    }
 }

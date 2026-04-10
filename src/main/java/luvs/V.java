@@ -1,6 +1,8 @@
 package luvs;
 
 import luvs.values.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import static luvs.CssProp.*;
 
 /**
@@ -10,6 +12,17 @@ import static luvs.CssProp.*;
 public final class V {
 
     private V() {} // Utility class
+
+    /** Converts CharSequence to string, using delegatedCharSeqVal() for DelegatedCharSeq objects */
+    private static String toStr(CharSequence value) {
+        return (value instanceof luvx.DelegatedCharSeq)
+            ? ((luvx.DelegatedCharSeq) value).delegatedCharSeqVal()
+            : value.toString();
+    }
+
+    private static String joinValues(CharSequence... values) {
+        return Stream.of(values).map(V::toStr).collect(Collectors.joining(", "));
+    }
 
     // ========== Length Units ==========
 
@@ -74,7 +87,7 @@ public final class V {
      * @return The string "var(--varName, fallback)".
      */
     public static String var(String varName, CharSequence fallback) {
-        return String.format("var(--%s, %s)", varName, fallback);
+        return String.format("var(--%s, %s)", varName, toStr(fallback));
     }
 
     /**
@@ -93,7 +106,7 @@ public final class V {
      * Usage: width(min(percent(100), px(500)))
      */
     public static String min(CharSequence... values) {
-        return "min(" + String.join(", ", values) + ")";
+        return "min(" + joinValues(values) + ")";
     }
 
     /**
@@ -101,7 +114,7 @@ public final class V {
      * Usage: height(max(vh(50), px(300)))
      */
     public static String max(CharSequence... values) {
-        return "max(" + String.join(", ", values) + ")";
+        return "max(" + joinValues(values) + ")";
     }
 
     /**
@@ -112,7 +125,7 @@ public final class V {
      * @param max Maximum value
      */
     public static String clamp(CharSequence min, CharSequence preferred, CharSequence max) {
-        return "clamp(" + min + ", " + preferred + ", " + max + ")";
+        return "clamp(" + toStr(min) + ", " + toStr(preferred) + ", " + toStr(max) + ")";
     }
 
     // ========== Color Functions ==========
@@ -138,7 +151,7 @@ public final class V {
      * Usage: color(hsl(120, percent(100), percent(50)))
      */
     public static String hsl(int hue, CharSequence saturation, CharSequence lightness) {
-        return "hsl(" + hue + ", " + saturation + ", " + lightness + ")";
+        return "hsl(" + hue + ", " + toStr(saturation) + ", " + toStr(lightness) + ")";
     }
 
     /**
@@ -146,7 +159,7 @@ public final class V {
      * Usage: color(hsla(120, percent(100), percent(50), 0.8))
      */
     public static String hsla(int hue, CharSequence saturation, CharSequence lightness, double alpha) {
-        return "hsla(" + hue + ", " + saturation + ", " + lightness + ", " + alpha + ")";
+        return "hsla(" + hue + ", " + toStr(saturation) + ", " + toStr(lightness) + ", " + alpha + ")";
     }
 
     // ========== Gradient Functions ==========
@@ -156,7 +169,7 @@ public final class V {
      * Usage: background(linearGradientWithAngle(deg(45), RED, BLUE))
      */
     public static String linearGradientWithAngle(CharSequence angle, CharSequence... colors) {
-        return "linear-gradient(" + angle + ", " + String.join(", ", colors) + ")";
+        return "linear-gradient(" + toStr(angle) + ", " + joinValues(colors) + ")";
     }
 
     /**
@@ -164,7 +177,7 @@ public final class V {
      * Usage: background(linearGradient(RED, BLUE))
      */
     public static String linearGradient(CharSequence... colors) {
-        return "linear-gradient(" + String.join(", ", colors) + ")";
+        return "linear-gradient(" + joinValues(colors) + ")";
     }
 
     /**
@@ -172,7 +185,7 @@ public final class V {
      * Usage: background(radialGradient("#ff0000", "#0000ff"))
      */
     public static String radialGradient(CharSequence... colors) {
-        return "radial-gradient(" + String.join(", ", colors) + ")";
+        return "radial-gradient(" + joinValues(colors) + ")";
     }
 
     /**
@@ -180,25 +193,25 @@ public final class V {
      * Usage: background(conicGradient("#ff0000", "#0000ff", "#00ff00"))
      */
     public static String conicGradient(CharSequence... colors) {
-        return "conic-gradient(" + String.join(", ", colors) + ")";
+        return "conic-gradient(" + joinValues(colors) + ")";
     }
 
     // ========== Transform Functions (chainable) ==========
 
     public static Transform rotate(CharSequence angle) {
-        return new Transform("rotate(" + angle + ")");
+        return new Transform("rotate(" + toStr(angle) + ")");
     }
 
     public static Transform rotateX(CharSequence angle) {
-        return new Transform("rotateX(" + angle + ")");
+        return new Transform("rotateX(" + toStr(angle) + ")");
     }
 
     public static Transform rotateY(CharSequence angle) {
-        return new Transform("rotateY(" + angle + ")");
+        return new Transform("rotateY(" + toStr(angle) + ")");
     }
 
     public static Transform rotateZ(CharSequence angle) {
-        return new Transform("rotateZ(" + angle + ")");
+        return new Transform("rotateZ(" + toStr(angle) + ")");
     }
 
     public static Transform scale(Number value) {
@@ -218,37 +231,37 @@ public final class V {
     }
 
     public static Transform translate(CharSequence x, CharSequence y) {
-        return new Transform("translate(" + x + ", " + y + ")");
+        return new Transform("translate(" + toStr(x) + ", " + toStr(y) + ")");
     }
 
     public static Transform translateX(CharSequence value) {
-        return new Transform("translateX(" + value + ")");
+        return new Transform("translateX(" + toStr(value) + ")");
     }
 
     public static Transform translateY(CharSequence value) {
-        return new Transform("translateY(" + value + ")");
+        return new Transform("translateY(" + toStr(value) + ")");
     }
 
     public static Transform translateZ(CharSequence value) {
-        return new Transform("translateZ(" + value + ")");
+        return new Transform("translateZ(" + toStr(value) + ")");
     }
 
     public static Transform skew(CharSequence x, CharSequence y) {
-        return new Transform("skew(" + x + ", " + y + ")");
+        return new Transform("skew(" + toStr(x) + ", " + toStr(y) + ")");
     }
 
     public static Transform skewX(CharSequence angle) {
-        return new Transform("skewX(" + angle + ")");
+        return new Transform("skewX(" + toStr(angle) + ")");
     }
 
     public static Transform skewY(CharSequence angle) {
-        return new Transform("skewY(" + angle + ")");
+        return new Transform("skewY(" + toStr(angle) + ")");
     }
 
     // ========== Filter Functions (chainable) ==========
 
     public static Filter blur(CharSequence radius) {
-        return new Filter("blur(" + radius + ")");
+        return new Filter("blur(" + toStr(radius) + ")");
     }
 
     public static Filter brightness(Number amount) {
@@ -260,7 +273,7 @@ public final class V {
     }
 
     public static Filter dropShadow(CharSequence offsetX, CharSequence offsetY, CharSequence blurRadius, CharSequence color) {
-        return new Filter("drop-shadow(" + offsetX + " " + offsetY + " " + blurRadius + " " + color + ")");
+        return new Filter("drop-shadow(" + toStr(offsetX) + " " + toStr(offsetY) + " " + toStr(blurRadius) + " " + toStr(color) + ")");
     }
 
     public static Filter grayscale(Number amount) {
@@ -268,7 +281,7 @@ public final class V {
     }
 
     public static Filter hueRotate(CharSequence angle) {
-        return new Filter("hue-rotate(" + angle + ")");
+        return new Filter("hue-rotate(" + toStr(angle) + ")");
     }
 
     public static Filter invert(Number amount) {
@@ -503,7 +516,7 @@ public final class V {
      * Usage: stop(PRIMARY, 50) → "PRIMARY 50%"
      */
     public static String stop(CharSequence color, Number percentage) {
-        return color + " " + percentage + "%";
+        return toStr(color) + " " + percentage + "%";
     }
 
     /**
@@ -512,7 +525,7 @@ public final class V {
      * Usage: stop(PRIMARY, percent(25)) → "PRIMARY 25%"
      */
     public static String stop(CharSequence color, CharSequence position) {
-        return color + " " + position;
+        return toStr(color) + " " + toStr(position);
     }
 
     // ========== CSS Property Name Constants ==========

@@ -5,18 +5,20 @@ import java.util.stream.Collectors;
 import luvx.DelegatedCharSeq;
 
 /**
- * A Style is a collection of CSS rules and keyframes.
- * Create with: style(rule1, rule2, keyframes1, ...)
+ * A Style is a collection of CSS rules, keyframes, comments, and empty lines.
+ * Create with: style(rule1, rule2, keyframes1, comment(...), emptyLine(), ...)
  * Use with: E.style(myStyle)
  */
 public final class CssRules implements CssRuleFrag {
 
     private final CssRule[] rules;
     private final Keyframes[] keyframes;
+    private final CssRuleFrag[] orderedFragments;
 
     public CssRules(CssRule... rules) {
         this.rules = rules;
         this.keyframes = new Keyframes[0];
+        this.orderedFragments = rules;
     }
 
     public CssRules(Object... items) {
@@ -29,25 +31,85 @@ public final class CssRules implements CssRuleFrag {
             .filter(item -> item instanceof Keyframes)
             .map(item -> (Keyframes) item)
             .toArray(Keyframes[]::new);
+
+        // Store all CssRuleFrag items in order (CssRule, CssComment, CssEmptyLine)
+        this.orderedFragments = Arrays.stream(items)
+            .filter(item -> item instanceof CssRuleFrag)
+            .map(item -> (CssRuleFrag) item)
+            .toArray(CssRuleFrag[]::new);
     }
 
     @Override
     public String delegatedCharSeqVal() {
-        if (keyframes.length == 0) {
-            return Arrays.stream(rules)
-                .map(CssRule::toString)
+        // If there are keyframes, output them first, then ordered fragments
+        if (keyframes.length > 0) {
+            String keyframesStr = Arrays.stream(keyframes)
+                .map(Keyframes::toString)
                 .collect(Collectors.joining("\n\n"));
+
+            String fragmentsStr = renderOrderedFragments();
+
+            return fragmentsStr.isEmpty()
+                ? keyframesStr
+                : keyframesStr + "\n\n" + fragmentsStr;
         }
 
-        String keyframesStr = Arrays.stream(keyframes)
-            .map(Keyframes::toString)
-            .collect(Collectors.joining("\n\n"));
+        // No keyframes, just render ordered fragments
+        return renderOrderedFragments();
+    }
+    
+    @Override
+    public String toString(){
+        return delegatedCharSeqVal();
+    }
+    
 
-        String rulesStr = Arrays.stream(rules)
-            .map(CssRule::toString)
-            .collect(Collectors.joining("\n\n"));
+    private String renderOrderedFragments() {
+        StringBuilder sb = new StringBuilder();
+        boolean firstItem = true;
 
-        return keyframesStr + "\n\n" + rulesStr;
+        for (CssRuleFrag frag : orderedFragments) {
+            if (frag instanceof CssEmptyLine) {
+                // Empty lines just add a newline
+                sb.append("\n");
+            } else if (frag instanceof CssComment cmnt) {
+                // Comments on their own line
+                if (!firstItem) {
+                    // the comments are either block or line
+                    sb.append("\n"); 
+                    if(cmnt.isBlock())sb.append("\n");
+                }
+                sb.append(frag.delegatedCharSeqVal());
+                firstItem = false;
+            } else if (frag instanceof CssRule) {
+                // Rules with double newline separation
+                if (!firstItem) {
+                    sb.append("\n\n");
+                }
+                sb.append(frag.delegatedCharSeqVal());
+                firstItem = false;
+            } else if (frag instanceof MediaQuery) {
+                // Media queries with double newline separation
+                if (!firstItem) {
+                    sb.append("\n\n");
+                }
+                sb.append(frag.delegatedCharSeqVal());
+                firstItem = false;
+            } else if (frag instanceof CssRules) {
+                // Nested CssRules (from rulesFrom)
+                if (!firstItem) {
+                    sb.append("\n\n");
+                }
+                sb.append(frag.delegatedCharSeqVal());
+                firstItem = false;
+            }
+        }
+
+        return sb.toString();
+    }
+
+    CssRule[] getRules() {
+        return rules;
     }
 
     /**
@@ -132,25 +194,30 @@ public final class CssRules implements CssRuleFrag {
 
     /**
      * Creates rules from mixed fragments and arrays.
-     * Accepts both CssRule and CssRule[] objects, flattens them into a single CssRules.
+     * Accepts CssRule, CssRules, CssComment, and CssEmptyLine objects, preserving order.
      *
      * Usage:
      * <pre>
      * return rulesFrom(
+     *     comment("Section: Header"),
      *     frag(header.____(...), nav.____(...)),
+     *     emptyLine(),
      *     forEachRule(categories, cat -> ...),
      *     frag(footer.____(...))
      * );
      * </pre>
      */
     public static CssRules rulesFrom(CssRuleFrag ... fragments) {
-        return new CssRules(Arrays.stream(fragments)
+        Object[] expandedItems = Arrays.stream(fragments)
             .flatMap(frag -> switch (frag) {
                     case CssRule rule -> java.util.stream.Stream.of(rule);
-                    case CssRules rules -> Arrays.stream(rules.rules);
+                    case CssRules rules -> Arrays.stream(rules.orderedFragments);
+                    case MediaQuery mq -> java.util.stream.Stream.of(mq);
+                    case CssComment comment -> java.util.stream.Stream.of(comment);
+                    case CssEmptyLine emptyLine -> java.util.stream.Stream.of(emptyLine);
                 }
             )
-            .toArray(CssRule[]::new)
-        );
+            .toArray();
+        return new CssRules(expandedItems);
     }
 }

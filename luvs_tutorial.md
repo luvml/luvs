@@ -28,7 +28,7 @@ LuvS has four main entry points, each a static utility class:
 | `S`   | CSS **S**electors (static helpers) | `descendant(...)`, `grouping(...)` |
 | `Selector` | Fluent selector builder | `selector(container, ">", div)` |
 
-Plus supporting types: `CssClass`, `HtmlTag`, `CssRule`, `CssRules`, `CssVariable`, `Keyframes`.
+Plus supporting types: `CssClass`, `HtmlTag`, `CssRule`, `CssRules`, `CssVariable`, `Keyframes`, `MQ`.
 
 ### Static Imports
 
@@ -41,6 +41,9 @@ import static luvs.HtmlTag.*;     // HTML tag selectors: div, span, input, etc.
 import static luvs.CssRule.rule;  // Explicit rule creation
 import static luvs.CssRules.*;    // rules(), rulesFrom(), forEachRule(), etc.
 import static luvs.CssProp.*;     // Property name constants: TRANSFORM, ALL, etc.
+import static luvs.MQ.*;            // Media queries: media(), minWidth(), prefersColorScheme(), etc.
+import static luvs.CssComment.*;    // CSS comments: comment(), commentBlock()
+import static luvs.CssEmptyLine.emptyLine;  // Empty lines for visual separation
 ```
 
 ## Properties (`P`)
@@ -445,18 +448,116 @@ public static CssRules appRules() {
 
 ### CssRuleFrag (Sealed Interface)
 
-`CssRuleFrag` is a sealed interface with two implementations: `CssRule` and `CssRules`. This enables `rulesFrom()` to accept a mix of individual rules and rule collections:
+`CssRuleFrag` is a sealed interface that permits: `CssRule`, `CssRules`, `CssComment`, `CssEmptyLine`, and `MediaQuery`. This enables `rulesFrom()` to accept a mix of rules, media queries, comments, and empty lines:
 
 ```java
 public static CssRules allStyles() {
     return rulesFrom(
+        comment("Base styles section"),
         baseRules(),         // CssRules
+        emptyLine(),
+        comment("Header styles"),
         headerRules(),       // CssRules
         someSpecificRule,    // CssRule
+        emptyLine(),
         footerRules()        // CssRules
     );
 }
 ```
+
+### CSS Comments and Empty Lines
+
+Organize your CSS with comments and visual separation:
+
+```java
+import static luvs.CssComment.comment;
+import static luvs.CssComment.commentBlock;
+import static luvs.CssEmptyLine.emptyLine;
+
+var css = rules(
+    comment("=== Reset and Base Styles ==="),
+    $all.____(margin(ZERO), padding(ZERO)),
+    body.____(font_family("system-ui", "sans-serif")),
+    emptyLine(),
+
+    comment("Layout Components"),
+    container.____(max_width(px(1200)), margin(ZERO, AUTO)),
+    emptyLine(),
+    emptyLine(),
+
+    comment("Interactive Elements"),
+    btn.hover().____(transform(scale(1.05)))
+);
+```
+
+**Output:**
+```css
+/* === Reset and Base Styles === */
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: system-ui, sans-serif;
+}
+
+
+/* Layout Components */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+
+
+/* Interactive Elements */
+.btn:hover {
+    transform: scale(1.05);
+}
+```
+
+Comments render as `/* text */` and empty lines add visual separation. Both preserve their exact position in the output, making generated CSS more readable and maintainable.
+
+**`comment()` vs `commentBlock()`:**
+
+Both render identically as `/* text */`. The difference is **spacing** when rendered inside `CssRules`:
+
+- `comment("text")` — single newline before it (tight, sits close to the next rule)
+- `commentBlock("text")` — double newline before it (extra blank line, stands out as a section header)
+
+Varargs differ too: `comment("a", "b")` concatenates → `/* ab */`, while `commentBlock("line1", "line2")` joins with newlines → `/* line1\nline2 */`.
+
+```java
+// In a rulesFrom() or rules() context:
+rulesFrom(
+    rule1,
+    comment("Inline note"),       // single blank line before — tight
+    rule2,
+    commentBlock("=== Section ==="),  // double blank line before — visual break
+    rule3
+)
+```
+
+Output:
+```css
+.rule1 { ... }
+
+/* Inline note */
+
+.rule2 { ... }
+
+
+/* === Section === */
+
+.rule3 { ... }
+```
+
+**Use cases:**
+- Section headers when merging multiple style files
+- Documenting complex selectors or property combinations
+- Visual separation between logically distinct rule groups
+- Leaving placeholders or notes in generated CSS
 
 ### Data-Driven Rules with `forEachRule`
 
@@ -589,6 +690,178 @@ animation("fadeIn 0.5s ease-in-out infinite")
 ```
 
 No string duplication - rename the keyframes and all `animation()` calls update automatically.
+
+## Media Queries (`MQ`)
+
+Use `import static luvs.MQ.*;` for the full media query DSL.
+
+### Basic Breakpoints
+
+```java
+import static luvs.MQ.*;
+
+var tablet = media(minWidth(px(768)),
+    container.____(padding(rem(2)), max_width(px(1200))),
+    sidebar.____(display(BLOCK))
+);
+
+var mobile = media(maxWidth(px(767)),
+    sidebar.____(display(NONE)),
+    nav.____(flex_direction(COLUMN))
+);
+```
+
+Renders as:
+```css
+@media (min-width: 768px) {
+    .container {
+        padding: 2rem;
+        max-width: 1200px;
+    }
+
+    .sidebar {
+        display: block;
+    }
+}
+```
+
+### Condition Helpers
+
+All dimension helpers accept any `CharSequence` value (e.g., `px()`, `rem()`, `em()`):
+
+| Method | Output |
+|--------|--------|
+| `minWidth(px(768))` | `(min-width: 768px)` |
+| `maxWidth(px(1200))` | `(max-width: 1200px)` |
+| `minHeight(vh(100))` | `(min-height: 100vh)` |
+| `maxHeight(px(600))` | `(max-height: 600px)` |
+| `prefersColorScheme(DARK)` | `(prefers-color-scheme: dark)` |
+| `prefersColorScheme(LIGHT)` | `(prefers-color-scheme: light)` |
+| `prefersReducedMotion()` | `(prefers-reduced-motion: reduce)` |
+| `orientation(PORTRAIT)` | `(orientation: portrait)` |
+| `orientation(LANDSCAPE)` | `(orientation: landscape)` |
+| `screen()` | `screen` |
+| `print()` | `print` |
+
+### Combining Conditions
+
+Chain `.and()` and `.or()` for compound conditions:
+
+```java
+// Range: tablet to desktop
+var mid = media(minWidth(px(768)).and(maxWidth(px(1200))),
+    container.____(padding(rem(1)))
+);
+// → @media (min-width: 768px) and (max-width: 1200px) { ... }
+
+// Media type + feature
+var screenTablet = media(screen().and(minWidth(px(768))),
+    sidebar.____(display(FLEX))
+);
+// → @media screen and (min-width: 768px) { ... }
+
+// OR (comma-separated)
+var screenOrPrint = media(screen().or(print()),
+    body.____(font_family("Georgia, serif"))
+);
+// → @media screen, print { ... }
+
+// NOT
+var notPrint = media(not(print()),
+    nav.____(display(FLEX))
+);
+// → @media not print { ... }
+```
+
+### Dark Mode
+
+```java
+var darkMode = media(prefersColorScheme(DARK),
+    $root.____(
+        AppVars.primary_color.def("#90caf9"),
+        AppVars.bg_color.def("#121212")
+    ),
+    body.____(background_color("#121212"), color("#e0e0e0"))
+);
+```
+
+### Escape Hatches
+
+For anything not covered by the DSL:
+
+```java
+// Raw condition string
+media(condition("(hover: hover) and (pointer: fine)"),
+    btn.____(padding(px(4), px(8)))
+);
+
+// Generic feature builder
+media(feature("resolution", "2dppx"),
+    img.____(width(percent(50)))
+);
+```
+
+### Using with `rulesFrom()`
+
+Media queries integrate with `rulesFrom()` like any other `CssRuleFrag`:
+
+```java
+return rulesFrom(
+    comment("Base styles"),
+    body.____(margin(ZERO), font_family("system-ui, sans-serif")),
+    container.____(max_width(px(1200)), margin(ZERO, AUTO)),
+
+    comment("Responsive"),
+    media(maxWidth(px(767)),
+        container.____(padding(px(16))),
+        sidebar.____(display(NONE))
+    ),
+    media(minWidth(px(768)),
+        container.____(padding(px(32))),
+        sidebar.____(display(BLOCK))
+    ),
+
+    comment("Accessibility"),
+    media(prefersReducedMotion(),
+        $all.____(transition("none"), animation("none"))
+    )
+);
+```
+
+Media queries also accept `CssRules` blocks directly, which are flattened:
+
+```java
+CssRules headerRules = rules(
+    header.____(padding(rem(1))),
+    nav.____(display(FLEX))
+);
+
+var tablet = media(minWidth(px(768)), headerRules);
+```
+
+### Nesting Prevention
+
+Nesting `@media` inside `@media` is prevented at runtime:
+
+```java
+var inner = media(maxWidth(px(600)), rule(".small", font_size(px(12))));
+
+// This throws IllegalArgumentException at runtime:
+media(minWidth(px(768)), inner);  // ERROR: "Media queries cannot be nested"
+```
+
+### Qualified Access (`MQ.`)
+
+If you need to disambiguate from other imports, use qualified access:
+
+```java
+// Instead of wildcard import:
+import luvs.MQ;
+
+var tablet = MQ.media(MQ.minWidth(px(768)),
+    container.____(padding(rem(2)))
+);
+```
 
 ## Organization Patterns
 
@@ -947,25 +1220,41 @@ static CssRules buttonVariant(CssClass cls, CharSequence bg, CharSequence hoverB
 
 ### Assembling Everything
 
-Assemble with `rulesFrom()` — it accepts any mix of `CssRules` and `CssRule` (`CssRuleFrag`):
+Assemble with `rulesFrom()` — it accepts any mix of `CssRuleFrag` (rules, comments, empty lines):
 
 ```java
 public static CssRules allAppStyles() {
     return rulesFrom(
-        Tw.allRules(),                          // utility classes
-        Shortcut.allRules(),                    // shortcuts
-        hoverLift(case_card),                   // rule generators
+        comment("=== Utility Classes ==="),
+        Tw.allRules(),
+        emptyLine(),
+
+        comment("=== Component Shortcuts ==="),
+        Shortcut.allRules(),
+        emptyLine(),
+
+        comment("=== Interactive Effects ==="),
+        hoverLift(case_card),
+        emptyLine(),
+
+        comment("=== Button Variants ==="),
         buttonVariant(btn_primary, PRIMARY, PRIMARY_DARK),
         buttonVariant(btn_danger, DANGER, DANGER_DARK),
-        forEachRule(CATEGORIES, cat ->          // data-driven
+        emptyLine(),
+
+        comment("=== Data-Driven Category Styles ==="),
+        forEachRule(CATEGORIES, cat ->
             cat_btn.__data("category-id", cat.id()).____( background_color(cat.color()) )
         ),
-        AppStyles.appRules()                    // app-specific
+        emptyLine(),
+
+        comment("=== App-Specific Styles ==="),
+        AppStyles.appRules()
     );
 }
 ```
 
-Organize sub-sections as private methods returning `CssRules`, then assemble in one `rulesFrom()` call — keeps large stylesheets readable.
+Organize sub-sections as private methods returning `CssRules`, then assemble in one `rulesFrom()` call with comments and empty lines for readability — keeps large stylesheets navigable.
 
 ### What you get vs Tailwind / UnoCSS
 
@@ -1156,6 +1445,24 @@ Starting from `HtmlTag` or `CssClass`:
 ```
 
 All return `Selector`, which itself supports further chaining of pseudo-classes, pseudo-elements, and attribute selectors.
+
+### Media query conditions summary
+
+From `import static luvs.MQ.*;`:
+```
+media(condition, rules...)          → @media condition { rules }
+minWidth(val)  maxWidth(val)        → (min-width: val) / (max-width: val)
+minHeight(val) maxHeight(val)       → (min-height: val) / (max-height: val)
+prefersColorScheme(DARK/LIGHT)      → (prefers-color-scheme: dark/light)
+prefersReducedMotion()              → (prefers-reduced-motion: reduce)
+orientation(PORTRAIT/LANDSCAPE)     → (orientation: portrait/landscape)
+screen()  print()  all()            → screen / print / all
+not(cond)                           → not cond
+cond.and(other)                     → cond and other
+cond.or(other)                      → cond, other
+condition("raw")                    → raw (escape hatch)
+feature("name", val)                → (name: val) (generic)
+```
 
 ## Real-World Notes
 
