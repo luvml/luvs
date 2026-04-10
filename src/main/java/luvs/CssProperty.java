@@ -32,4 +32,9 @@ public final class CssProperty implements DelegatedCharSeq {
     public String delegatedCharSeqVal() {
         return name + ": " + value + ";";
     }
+
+    @Override
+    public String toString() {
+        return delegatedCharSeqVal();
+    }
 }

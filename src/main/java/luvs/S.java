@@ -11,7 +11,7 @@ public final class S {
     private S() {} // Utility class
 
     // --- Basic Selectors ---
-    public static String all() { return "*"; }
+    public static String starSelector() { return "*"; }
     public static String tag(String tagName) { return tagName; }
     public static String cls(String className) { return "." + className.trim(); }
     public static String id(String idName) { return "#" + idName.trim(); }
@@ -33,6 +33,28 @@ public final class S {
     public static String adjacent(CharSequence... selectors) { return join(" + ", selectors); }
     public static String sibling(CharSequence... selectors) { return join(" ~ ", selectors); }
     public static String grouping(CharSequence... selectors) { return join(", ", selectors); }
+
+    /**
+     * Compound selector: combines selectors without space, returns a Selector for chaining.
+     * Usage: compound(div, active).hover() → "div.active:hover"
+     * Usage: compound(button, primary, disabled).__(...) → "button.primary.disabled { ... }"
+     *
+     * Handles CssClass instances by using their selector form (with dot prefix).
+     * HtmlTag and other CharSequence types are used as-is.
+     *
+     * Returns a Selector so you can chain pseudo-classes, attribute selectors, etc.
+     */
+    public static Selector compound(CharSequence... selectors) {
+        StringBuilder sb = new StringBuilder();
+        for (CharSequence sel : selectors) {
+            if (sel instanceof CssClass) {
+                sb.append(((CssClass) sel).getSelector());
+            } else {
+                sb.append(sel.toString());
+            }
+        }
+        return Selector.selector(sb.toString());
+    }
     
     // --- Pseudo-classes ---
     public static String hover(CharSequence selector) { return selector + ":hover"; }

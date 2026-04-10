@@ -4,11 +4,16 @@ import java.util.stream.Stream;
 
 /**
  * Fluent API for building CSS selectors and rules.
+ * Implements CharSequence so Selector can be used anywhere a CharSequence is expected.
  *
  * Usage:
  *   selector(center, ">", div).rule(color("blue"), margin(px(10)))
  */
-public final class Selector {
+public final class Selector implements CharSequence,
+                                        AttributeSelector,
+                                        PseudoClassMixin,
+                                        NegatedPseudoClassMixin,
+                                        PseudoElementMixin {
 
     private final CharSequence[] parts;
 
@@ -33,6 +38,14 @@ public final class Selector {
      */
     public CssRule rule(CssProperty... properties) {
         return new CssRule(build(), properties);
+    }
+
+    /**
+     * Returns the built selector string for attribute selectors.
+     */
+    @Override
+    public CharSequence getSelectorString() {
+        return build();
     }
 
     // ========== Chaining DSL Methods ==========
@@ -80,116 +93,7 @@ public final class Selector {
         ).toArray(CharSequence[]::new));
     }
 
-    /**
-     * Pseudo-class :hover
-     */
-    public Selector hover() {
-        return appendPseudo(":hover");
-    }
-
-    /**
-     * Pseudo-class :focus
-     */
-    public Selector focus() {
-        return appendPseudo(":focus");
-    }
-
-    /**
-     * Pseudo-class :active
-     */
-    public Selector active() {
-        return appendPseudo(":active");
-    }
-
-    /**
-     * Pseudo-class :first-child
-     */
-    public Selector firstChild() {
-        return appendPseudo(":first-child");
-    }
-
-    /**
-     * Pseudo-class :last-child
-     */
-    public Selector lastChild() {
-        return appendPseudo(":last-child");
-    }
-
-    /**
-     * Pseudo-class :nth-child(n)
-     */
-    public Selector nthChild(CharSequence n) {
-        return appendPseudo(":nth-child(" + n + ")");
-    }
-
-    /**
-     * Pseudo-class :nth-of-type(n)
-     */
-    public Selector nthOfType(CharSequence n) {
-        return appendPseudo(":nth-of-type(" + n + ")");
-    }
-
-    /**
-     * Pseudo-class :not(selector)
-     * Auto-detects CssClass and adds dot prefix
-     */
-    public Selector not(CharSequence selector) {
-        if (selector instanceof CssClass) {
-            return appendPseudo(":not(" + ((CssClass) selector).getSelector() + ")");
-        }
-        return appendPseudo(":not(" + selector + ")");
-    }
-
-    // ========== Pseudo-elements ==========
-
-    /**
-     * Pseudo-element ::before
-     */
-    public Selector before() {
-        return appendPseudo("::before");
-    }
-
-    /**
-     * Pseudo-element ::after
-     */
-    public Selector after() {
-        return appendPseudo("::after");
-    }
-
-    /**
-     * Pseudo-element ::first-line
-     */
-    public Selector firstLine() {
-        return appendPseudo("::first-line");
-    }
-
-    /**
-     * Pseudo-element ::first-letter
-     */
-    public Selector firstLetter() {
-        return appendPseudo("::first-letter");
-    }
-
-    /**
-     * Pseudo-element ::selection
-     */
-    public Selector selection() {
-        return appendPseudo("::selection");
-    }
-
-    /**
-     * Pseudo-element ::placeholder
-     */
-    public Selector placeholder() {
-        return appendPseudo("::placeholder");
-    }
-
-    private Selector appendPseudo(String pseudo) {
-        CharSequence[] newParts = parts.clone();
-        int lastIdx = newParts.length - 1;
-        newParts[lastIdx] = newParts[lastIdx].toString() + pseudo;
-        return new Selector(newParts);
-    }
+    // Pseudo-class, negated pseudo-class, and pseudo-element methods inherited from mixin interfaces
 
     /**
      * Builds the CSS selector string.
@@ -210,6 +114,23 @@ public final class Selector {
     @Override
     public String toString() {
         return build();
+    }
+
+    // ========== CharSequence Implementation ==========
+
+    @Override
+    public int length() {
+        return toString().length();
+    }
+
+    @Override
+    public char charAt(int index) {
+        return toString().charAt(index);
+    }
+
+    @Override
+    public CharSequence subSequence(int start, int end) {
+        return toString().subSequence(start, end);
     }
 
 }

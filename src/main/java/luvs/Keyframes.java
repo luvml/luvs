@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  * );
  * </pre>
  */
-public class Keyframes {
+public class Keyframes implements CharSequence {
     private final String name;
     private final KeyframeStep[] steps;
 
@@ -27,12 +27,33 @@ public class Keyframes {
         return name;
     }
 
+    /**
+     * Returns the @keyframes CSS block.
+     */
     @Override
     public String toString() {
         String stepsStr = Arrays.stream(steps)
             .map(KeyframeStep::toString)
             .collect(Collectors.joining("\n  "));
         return "@keyframes " + name + " {\n  " + stepsStr + "\n}";
+    }
+
+    // ========== CharSequence Implementation ==========
+    // Delegates to name so Keyframes can be used directly in animation() etc.
+
+    @Override
+    public int length() {
+        return name.length();
+    }
+
+    @Override
+    public char charAt(int index) {
+        return name.charAt(index);
+    }
+
+    @Override
+    public CharSequence subSequence(int start, int end) {
+        return name.subSequence(start, end);
     }
 
     /**
@@ -57,6 +78,19 @@ public class Keyframes {
     }
 
     // Factory methods
+
+    /**
+     * Keyframe step at a percentage.
+     * Usage: frame(50, transform(translateY(px(-20))))
+     * @param percent 0-100
+     */
+    public static KeyframeStep frame(int percent, CssProperty... properties) {
+        return new KeyframeStep(percent + "%", properties);
+    }
+
+    /**
+     * Keyframe step with string selector (e.g., "0%, 100%" for combined steps).
+     */
     public static KeyframeStep frame(String selector, CssProperty... properties) {
         return new KeyframeStep(selector, properties);
     }
