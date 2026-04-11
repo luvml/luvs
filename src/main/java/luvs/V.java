@@ -32,6 +32,15 @@ public final class V {
     public static CssUnit percent(Number value) { return new Length(value, LengthUnit.PERCENT); }
     public static CssUnit vh(Number value) { return new Length(value, LengthUnit.VH); }
     public static CssUnit vw(Number value) { return new Length(value, LengthUnit.VW); }
+    public static CssUnit vmin(Number value) { return new Length(value, LengthUnit.VMIN); }
+    public static CssUnit vmax(Number value) { return new Length(value, LengthUnit.VMAX); }
+
+    // Print units
+    public static CssUnit cm(Number value) { return new Length(value, LengthUnit.CM); }
+    public static CssUnit mm(Number value) { return new Length(value, LengthUnit.MM); }
+    public static CssUnit in(Number value) { return new Length(value, LengthUnit.IN); }
+    public static CssUnit pt(Number value) { return new Length(value, LengthUnit.PT); }
+    public static CssUnit pc(Number value) { return new Length(value, LengthUnit.PC); }
 
     // ========== Time Units ==========
 
@@ -77,6 +86,113 @@ public final class V {
      * Allows nested grid items to align with parent grid tracks.
      */
     public static final String SUBGRID = "subgrid";
+
+    // ========== Common Value Constants (Added after audit) ==========
+
+    // Text overflow
+    public static final String ELLIPSIS = "ellipsis";
+    // CLIP - already defined
+
+    // Word break & overflow wrap
+    public static final String BREAK_ALL = "break-all";
+    public static final String KEEP_ALL = "keep-all";
+    public static final String BREAK_WORD = "break-word";
+    public static final String ANYWHERE = "anywhere";
+    // NORMAL - already defined
+
+    // Text transform
+    public static final String UPPERCASE = "uppercase";
+    public static final String LOWERCASE = "lowercase";
+    public static final String CAPITALIZE = "capitalize";
+
+    // Vertical align
+    // BASELINE - already defined
+    public static final String TOP = "top";
+    public static final String MIDDLE = "middle";
+    public static final String BOTTOM = "bottom";
+    public static final String TEXT_TOP = "text-top";
+    public static final String TEXT_BOTTOM = "text-bottom";
+    public static final String SUB = "sub";
+    public static final String SUPER = "super";
+
+    // Hyphens
+    public static final String MANUAL = "manual";
+
+    // List style
+    public static final String DISC = "disc";
+    public static final String CIRCLE = "circle";
+    public static final String SQUARE = "square";
+    public static final String DECIMAL = "decimal";
+    public static final String INSIDE = "inside";
+    public static final String OUTSIDE = "outside";
+
+    // Webkit box orient (for line-clamp)
+    // VERTICAL - already defined
+    // HORIZONTAL - already defined
+
+    // Scrollbar width (Firefox)
+    public static final String THIN = "thin";
+
+    // Column span
+    public static final String ALL = "all";
+
+    // Appearance
+    public static final String MENULIST = "menulist";
+    public static final String TEXTFIELD = "textfield";
+    public static final String BUTTON = "button";
+    public static final String CHECKBOX = "checkbox";
+
+    // Writing mode
+    public static final String LR_TB = "lr-tb";
+    public static final String RL_TB = "rl-tb";
+    public static final String TB_RL = "tb-rl";
+    public static final String TB_LR = "tb-lr";
+
+    // Direction
+    public static final String LTR = "ltr";
+    public static final String RTL = "rtl";
+
+    // Image rendering
+    public static final String CRISP_EDGES = "crisp-edges";
+    public static final String PIXELATED = "pixelated";
+
+    // Transform style
+    public static final String FLAT = "flat";
+    public static final String PRESERVE_3D = "preserve-3d";
+
+    // Mix blend mode / isolation
+    public static final String MULTIPLY = "multiply";
+    public static final String SCREEN = "screen";
+    public static final String OVERLAY = "overlay";
+    public static final String DARKEN = "darken";
+    public static final String LIGHTEN = "lighten";
+    public static final String COLOR_DODGE = "color-dodge";
+    public static final String COLOR_BURN = "color-burn";
+    public static final String HARD_LIGHT = "hard-light";
+    public static final String SOFT_LIGHT = "soft-light";
+    public static final String DIFFERENCE = "difference";
+    public static final String EXCLUSION = "exclusion";
+    public static final String HUE = "hue";
+    public static final String SATURATION = "saturation";
+    public static final String COLOR = "color";
+    public static final String LUMINOSITY = "luminosity";
+    public static final String ISOLATE = "isolate";
+
+    // Visibility (VISIBLE, HIDDEN already defined in enums below)
+    public static final String COLLAPSE = "collapse";
+
+    // Float & Clear (LEFT, RIGHT, NONE already defined in enums below)
+    public static final String BOTH = "both";
+
+    // Animation play state
+    public static final String RUNNING = "running";
+    public static final String PAUSED = "paused";
+
+    // All property values
+    public static final String UNSET = "unset";
+    public static final String REVERT = "revert";
+
+    // ====================================================================
 
     /**
      * For creating CSS var() functions.

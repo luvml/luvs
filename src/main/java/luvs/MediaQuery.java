@@ -70,6 +70,8 @@ public non-sealed class MediaQuery implements CssRuleFrag {
                     "@layer cannot be nested inside @media queries");
                 case Layer.LayerOrder ignored -> throw new IllegalArgumentException(
                     "@layer ordering cannot be nested inside @media queries");
+                case Page ignored -> throw new IllegalArgumentException(
+                    "@page cannot be nested inside @media queries");
                 case CssComment ignored -> {} // comments not preserved inside media queries
                 case CssEmptyLine ignored -> {} // empty lines not preserved inside media queries
             }

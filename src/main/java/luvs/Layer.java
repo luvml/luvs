@@ -71,6 +71,8 @@ public non-sealed class Layer implements CssRuleFrag {
                 case Layer layer -> out.add(layer); // nested layers allowed
                 case Layer.LayerOrder ignored -> throw new IllegalArgumentException(
                     "@layer ordering cannot be nested inside @layer");
+                case Page ignored -> throw new IllegalArgumentException(
+                    "@page cannot be nested inside @layer");
                 case MediaQuery ignored -> throw new IllegalArgumentException(
                     "@media cannot be nested inside @layer");
                 case ContainerQuery ignored -> throw new IllegalArgumentException(
@@ -106,6 +108,11 @@ public non-sealed class Layer implements CssRuleFrag {
         return sb.toString();
     }
 
+    @Override
+    public String toString() {
+        return delegatedCharSeqVal();
+    }
+
     /**
      * Declares the order of cascade layers.
      * Should appear before any layer definitions.
@@ -130,6 +137,11 @@ public non-sealed class Layer implements CssRuleFrag {
         @Override
         public String delegatedCharSeqVal() {
             return "@layer " + String.join(", ", layerNames) + ";";
+        }
+
+        @Override
+        public String toString() {
+            return delegatedCharSeqVal();
         }
     }
 }
