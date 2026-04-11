@@ -23,6 +23,14 @@ public final class P {
         return Stream.of(values).map(P::toStr).collect(Collectors.joining(" "));
     }
 
+    private static String joinSpace(CharSequence... values) {
+        return Stream.of(values).map(P::toStr).collect(Collectors.joining(" "));
+    }
+
+    private static String joinComma(CharSequence... values) {
+        return Stream.of(values).map(P::toStr).collect(Collectors.joining(", "));
+    }
+
     public static CssProperty prop(String name, CharSequence value) {
         return new CssProperty(name, value);
     }
@@ -332,6 +340,132 @@ public final class P {
     public static CssProperty animation_iteration_count(CharSequence value) { return prop("animation-iteration-count", value); }
     public static CssProperty animation_direction(CharSequence value) { return prop("animation-direction", value); }
     public static CssProperty animation_fill_mode(CharSequence value) { return prop("animation-fill-mode", value); }
+
+    // --- Backdrop Filter ---
+    public static CssProperty backdrop_filter(CharSequence value) { return prop("backdrop-filter", value); }
+
+    // --- Clip Path ---
+    public static CssProperty clip_path(CharSequence value) { return prop("clip-path", value); }
+
+    // --- Scroll Properties ---
+    public static CssProperty scroll_behavior(CharSequence value) { return prop("scroll-behavior", value); }
+    public static CssProperty scroll_snap_type(CharSequence value) { return prop("scroll-snap-type", value); }
+    public static CssProperty scroll_snap_align(CharSequence value) { return prop("scroll-snap-align", value); }
+    public static CssProperty scroll_snap_stop(CharSequence value) { return prop("scroll-snap-stop", value); }
+    public static CssProperty scroll_margin(CharSequence... values) { return prop("scroll-margin", joinSpace(values)); }
+    public static CssProperty scroll_margin_top(CharSequence value) { return prop("scroll-margin-top", value); }
+    public static CssProperty scroll_margin_right(CharSequence value) { return prop("scroll-margin-right", value); }
+    public static CssProperty scroll_margin_bottom(CharSequence value) { return prop("scroll-margin-bottom", value); }
+    public static CssProperty scroll_margin_left(CharSequence value) { return prop("scroll-margin-left", value); }
+    public static CssProperty scroll_padding(CharSequence... values) { return prop("scroll-padding", joinSpace(values)); }
+    public static CssProperty scroll_padding_top(CharSequence value) { return prop("scroll-padding-top", value); }
+    public static CssProperty scroll_padding_right(CharSequence value) { return prop("scroll-padding-right", value); }
+    public static CssProperty scroll_padding_bottom(CharSequence value) { return prop("scroll-padding-bottom", value); }
+    public static CssProperty scroll_padding_left(CharSequence value) { return prop("scroll-padding-left", value); }
+    public static CssProperty overscroll_behavior(CharSequence value) { return prop("overscroll-behavior", value); }
+    public static CssProperty overscroll_behavior_x(CharSequence value) { return prop("overscroll-behavior-x", value); }
+    public static CssProperty overscroll_behavior_y(CharSequence value) { return prop("overscroll-behavior-y", value); }
+
+    // --- Performance Hints ---
+    public static CssProperty will_change(CharSequence... properties) { return prop("will-change", joinComma(properties)); }
+    public static CssProperty contain(CharSequence value) { return prop("contain", value); }
+    public static CssProperty content_visibility(CharSequence value) { return prop("content-visibility", value); }
+
+    // --- Interaction Properties ---
+    public static CssProperty user_select(CharSequence value) { return prop("user-select", value); }
+    public static CssProperty pointer_events(CharSequence value) { return prop("pointer-events", value); }
+    public static CssProperty touch_action(CharSequence value) { return prop("touch-action", value); }
+
+    // --- Aspect Ratio ---
+    public static CssProperty aspect_ratio(CharSequence value) { return prop("aspect-ratio", value); }
+    public static CssProperty aspect_ratio(int width, int height) { return prop("aspect-ratio", width + " / " + height); }
+
+    // --- Logical Properties (Inline/Block) ---
+    // Margin
+    public static CssProperty margin_inline(CharSequence... values) { return prop("margin-inline", joinSpace(values)); }
+    public static CssProperty margin_inline_start(CharSequence value) { return prop("margin-inline-start", value); }
+    public static CssProperty margin_inline_end(CharSequence value) { return prop("margin-inline-end", value); }
+    public static CssProperty margin_block(CharSequence... values) { return prop("margin-block", joinSpace(values)); }
+    public static CssProperty margin_block_start(CharSequence value) { return prop("margin-block-start", value); }
+    public static CssProperty margin_block_end(CharSequence value) { return prop("margin-block-end", value); }
+
+    // Padding
+    public static CssProperty padding_inline(CharSequence... values) { return prop("padding-inline", joinSpace(values)); }
+    public static CssProperty padding_inline_start(CharSequence value) { return prop("padding-inline-start", value); }
+    public static CssProperty padding_inline_end(CharSequence value) { return prop("padding-inline-end", value); }
+    public static CssProperty padding_block(CharSequence... values) { return prop("padding-block", joinSpace(values)); }
+    public static CssProperty padding_block_start(CharSequence value) { return prop("padding-block-start", value); }
+    public static CssProperty padding_block_end(CharSequence value) { return prop("padding-block-end", value); }
+
+    // Border
+    public static CssProperty border_inline(CharSequence... values) { return prop("border-inline", joinSpace(values)); }
+    public static CssProperty border_inline_start(CharSequence... values) { return prop("border-inline-start", joinSpace(values)); }
+    public static CssProperty border_inline_end(CharSequence... values) { return prop("border-inline-end", joinSpace(values)); }
+    public static CssProperty border_block(CharSequence... values) { return prop("border-block", joinSpace(values)); }
+    public static CssProperty border_block_start(CharSequence... values) { return prop("border-block-start", joinSpace(values)); }
+    public static CssProperty border_block_end(CharSequence... values) { return prop("border-block-end", joinSpace(values)); }
+
+    // Border Width
+    public static CssProperty border_inline_width(CharSequence value) { return prop("border-inline-width", value); }
+    public static CssProperty border_inline_start_width(CharSequence value) { return prop("border-inline-start-width", value); }
+    public static CssProperty border_inline_end_width(CharSequence value) { return prop("border-inline-end-width", value); }
+    public static CssProperty border_block_width(CharSequence value) { return prop("border-block-width", value); }
+    public static CssProperty border_block_start_width(CharSequence value) { return prop("border-block-start-width", value); }
+    public static CssProperty border_block_end_width(CharSequence value) { return prop("border-block-end-width", value); }
+
+    // Border Color
+    public static CssProperty border_inline_color(CharSequence value) { return prop("border-inline-color", value); }
+    public static CssProperty border_inline_start_color(CharSequence value) { return prop("border-inline-start-color", value); }
+    public static CssProperty border_inline_end_color(CharSequence value) { return prop("border-inline-end-color", value); }
+    public static CssProperty border_block_color(CharSequence value) { return prop("border-block-color", value); }
+    public static CssProperty border_block_start_color(CharSequence value) { return prop("border-block-start-color", value); }
+    public static CssProperty border_block_end_color(CharSequence value) { return prop("border-block-end-color", value); }
+
+    // Border Style
+    public static CssProperty border_inline_style(CharSequence value) { return prop("border-inline-style", value); }
+    public static CssProperty border_inline_start_style(CharSequence value) { return prop("border-inline-start-style", value); }
+    public static CssProperty border_inline_end_style(CharSequence value) { return prop("border-inline-end-style", value); }
+    public static CssProperty border_block_style(CharSequence value) { return prop("border-block-style", value); }
+    public static CssProperty border_block_start_style(CharSequence value) { return prop("border-block-start-style", value); }
+    public static CssProperty border_block_end_style(CharSequence value) { return prop("border-block-end-style", value); }
+
+    // Positioning
+    public static CssProperty inset(CharSequence... values) { return prop("inset", joinSpace(values)); }
+    public static CssProperty inset_inline(CharSequence... values) { return prop("inset-inline", joinSpace(values)); }
+    public static CssProperty inset_inline_start(CharSequence value) { return prop("inset-inline-start", value); }
+    public static CssProperty inset_inline_end(CharSequence value) { return prop("inset-inline-end", value); }
+    public static CssProperty inset_block(CharSequence... values) { return prop("inset-block", joinSpace(values)); }
+    public static CssProperty inset_block_start(CharSequence value) { return prop("inset-block-start", value); }
+    public static CssProperty inset_block_end(CharSequence value) { return prop("inset-block-end", value); }
+
+    // Size
+    public static CssProperty inline_size(CharSequence value) { return prop("inline-size", value); }
+    public static CssProperty block_size(CharSequence value) { return prop("block-size", value); }
+    public static CssProperty min_inline_size(CharSequence value) { return prop("min-inline-size", value); }
+    public static CssProperty min_block_size(CharSequence value) { return prop("min-block-size", value); }
+    public static CssProperty max_inline_size(CharSequence value) { return prop("max-inline-size", value); }
+    public static CssProperty max_block_size(CharSequence value) { return prop("max-block-size", value); }
+
+    // --- Tier 2: Text Decoration Properties ---
+    public static CssProperty text_decoration_color(CharSequence value) { return prop("text-decoration-color", value); }
+    public static CssProperty text_decoration_style(CharSequence value) { return prop("text-decoration-style", value); }
+    public static CssProperty text_decoration_thickness(CharSequence value) { return prop("text-decoration-thickness", value); }
+    public static CssProperty text_underline_offset(CharSequence value) { return prop("text-underline-offset", value); }
+
+    // --- Tier 2: Outline Offset ---
+    public static CssProperty outline_offset(CharSequence value) { return prop("outline-offset", value); }
+
+    // --- Tier 2: Container Queries ---
+    public static CssProperty container_type(CharSequence value) { return prop("container-type", value); }
+    public static CssProperty container_name(CharSequence value) { return prop("container-name", value); }
+    public static CssProperty container(CharSequence... values) { return prop("container", joinSpace(values)); }
+
+    // --- Tier 2: Grid Named Areas ---
+    public static CssProperty grid_template_areas(CharSequence value) { return prop("grid-template-areas", value); }
+    public static CssProperty grid_area(CharSequence value) { return prop("grid-area", value); }
+
+    // --- Tier 3: Text Wrap ---
+    public static CssProperty text_wrap(CharSequence value) { return prop("text-wrap", value); }
 
     // --- Custom ---
     /**

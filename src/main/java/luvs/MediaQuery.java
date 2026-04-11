@@ -60,6 +60,16 @@ public non-sealed class MediaQuery implements CssRuleFrag {
                 case CssRules cssRules -> Collections.addAll(out, cssRules.getRules());
                 case MediaQuery mq -> throw new IllegalArgumentException(
                     "Media queries cannot be nested inside other media queries");
+                case FontFace ignored -> throw new IllegalArgumentException(
+                    "@font-face cannot be nested inside @media queries");
+                case Supports ignored -> throw new IllegalArgumentException(
+                    "@supports cannot be nested inside @media queries");
+                case ContainerQuery ignored -> throw new IllegalArgumentException(
+                    "@container cannot be nested inside @media queries");
+                case Layer ignored -> throw new IllegalArgumentException(
+                    "@layer cannot be nested inside @media queries");
+                case Layer.LayerOrder ignored -> throw new IllegalArgumentException(
+                    "@layer ordering cannot be nested inside @media queries");
                 case CssComment ignored -> {} // comments not preserved inside media queries
                 case CssEmptyLine ignored -> {} // empty lines not preserved inside media queries
             }

@@ -13,8 +13,9 @@ public enum HtmlTag implements DelegatedCharSeq,
                                 PseudoElementMixin,
                                 CombinatorMixin {
     // Special CSS selectors
-    $root,
-    $all,  // Universal selector: *
+    $root,        // :root pseudo-class
+    $all,         // Universal selector: *
+    $$backdrop,   // ::backdrop pseudo-element
 
     // Common elements
     body,
@@ -38,6 +39,7 @@ public enum HtmlTag implements DelegatedCharSeq,
         return switch(this){
             case $all -> "*";
             case $root -> ":root";
+            case $$backdrop -> "::backdrop";
             default -> name();
         };
     }
