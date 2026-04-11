@@ -72,6 +72,13 @@ public final class V {
     public static final String INITIAL = "initial";
 
     /**
+     * Represents the CSS 'subgrid' keyword for grid-template-columns/rows.
+     * Usage: grid_template_columns(SUBGRID)
+     * Allows nested grid items to align with parent grid tracks.
+     */
+    public static final String SUBGRID = "subgrid";
+
+    /**
      * For creating CSS var() functions.
      * @param varName The name of the CSS variable (without --).
      * @return The string "var(--varName)".
@@ -160,6 +167,104 @@ public final class V {
      */
     public static String hsla(int hue, CharSequence saturation, CharSequence lightness, double alpha) {
         return "hsla(" + hue + ", " + toStr(saturation) + ", " + toStr(lightness) + ", " + alpha + ")";
+    }
+
+    /**
+     * CSS color-mix() function.
+     * Mixes two colors in a specified color space.
+     * Usage: color(colorMix("in srgb", RED, percent(50), BLUE))
+     * Produces: color-mix(in srgb, red 50%, blue)
+     *
+     * @param colorSpace The color space (e.g., "in srgb", "in oklch", "in hsl")
+     * @param color1 First color
+     * @param percentage1 Percentage of first color (optional, use null to omit)
+     * @param color2 Second color
+     */
+    public static String colorMix(String colorSpace, CharSequence color1, CharSequence percentage1, CharSequence color2) {
+        String c1 = toStr(color1);
+        String c2 = toStr(color2);
+        if (percentage1 != null) {
+            return "color-mix(" + colorSpace + ", " + c1 + " " + toStr(percentage1) + ", " + c2 + ")";
+        } else {
+            return "color-mix(" + colorSpace + ", " + c1 + ", " + c2 + ")";
+        }
+    }
+
+    /**
+     * CSS color-mix() function with percentages for both colors.
+     * Usage: colorMix("in srgb", RED, percent(30), BLUE, percent(70))
+     * Produces: color-mix(in srgb, red 30%, blue 70%)
+     */
+    public static String colorMix(String colorSpace, CharSequence color1, CharSequence percentage1,
+                                   CharSequence color2, CharSequence percentage2) {
+        return "color-mix(" + colorSpace + ", " + toStr(color1) + " " + toStr(percentage1) +
+               ", " + toStr(color2) + " " + toStr(percentage2) + ")";
+    }
+
+    /**
+     * Simple color-mix with equal parts (50/50).
+     * Usage: colorMix("in srgb", RED, BLUE)
+     * Produces: color-mix(in srgb, red, blue)
+     */
+    public static String colorMix(String colorSpace, CharSequence color1, CharSequence color2) {
+        return colorMix(colorSpace, color1, null, color2);
+    }
+
+    /**
+     * Relative RGB color syntax - derives new color from existing.
+     * Usage: rgbFrom(var("--primary"), "r g b / 0.5")
+     * Produces: rgb(from var(--primary) r g b / 0.5)
+     *
+     * Example variations:
+     * - rgbFrom("blue", "r g b / 0.5") → semi-transparent version
+     * - rgbFrom(var("--accent"), "calc(r * 1.2) g b") → lighter red channel
+     * - rgbFrom("#ff0000", "r g b / calc(alpha - 0.2)") → more transparent
+     */
+    public static String rgbFrom(CharSequence sourceColor, String channels) {
+        return "rgb(from " + toStr(sourceColor) + " " + channels + ")";
+    }
+
+    /**
+     * Relative HSL color syntax.
+     * Usage: hslFrom(var("--primary"), "h s calc(l * 1.2)")
+     * Produces: hsl(from var(--primary) h s calc(l * 1.2))
+     *
+     * Common patterns:
+     * - hslFrom("blue", "h s calc(l * 0.8)") → darker version
+     * - hslFrom(var("--accent"), "calc(h + 180) s l") → complementary color
+     * - hslFrom("#ff0000", "h calc(s * 0.5) l") → desaturated version
+     */
+    public static String hslFrom(CharSequence sourceColor, String channels) {
+        return "hsl(from " + toStr(sourceColor) + " " + channels + ")";
+    }
+
+    /**
+     * Relative OKLCH color syntax (modern color space).
+     * Usage: oklchFrom(var("--primary"), "l c h / 0.8")
+     * Produces: oklch(from var(--primary) l c h / 0.8)
+     */
+    public static String oklchFrom(CharSequence sourceColor, String channels) {
+        return "oklch(from " + toStr(sourceColor) + " " + channels + ")";
+    }
+
+    /**
+     * Relative OKLAB color syntax.
+     * Usage: oklabFrom(var("--bg"), "calc(l + 0.1) a b")
+     * Produces: oklab(from var(--bg) calc(l + 0.1) a b)
+     */
+    public static String oklabFrom(CharSequence sourceColor, String channels) {
+        return "oklab(from " + toStr(sourceColor) + " " + channels + ")";
+    }
+
+    /**
+     * Generic relative color syntax for any color function.
+     * Usage: colorFrom("lch", var("--primary"), "l c h / 0.5")
+     * Produces: lch(from var(--primary) l c h / 0.5)
+     *
+     * Use this for color spaces not covered by dedicated helpers.
+     */
+    public static String colorFrom(String colorFunction, CharSequence sourceColor, String channels) {
+        return colorFunction + "(from " + toStr(sourceColor) + " " + channels + ")";
     }
 
     // ========== Gradient Functions ==========

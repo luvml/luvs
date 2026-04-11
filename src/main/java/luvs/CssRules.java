@@ -2,7 +2,7 @@ package luvs;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
-import luvx.DelegatedCharSeq;
+import java.util.stream.Stream;
 
 /**
  * A Style is a collection of CSS rules, keyframes, comments, and empty lines.
@@ -69,39 +69,85 @@ public final class CssRules implements CssRuleFrag {
         boolean firstItem = true;
 
         for (CssRuleFrag frag : orderedFragments) {
-            if (frag instanceof CssEmptyLine) {
-                // Empty lines just add a newline
-                sb.append("\n");
-            } else if (frag instanceof CssComment cmnt) {
-                // Comments on their own line
-                if (!firstItem) {
-                    // the comments are either block or line
-                    sb.append("\n"); 
-                    if(cmnt.isBlock())sb.append("\n");
+            switch (frag) {
+                case CssEmptyLine ignored -> {
+                    // Empty lines just add a newline
+                    sb.append("\n");
                 }
-                sb.append(frag.delegatedCharSeqVal());
-                firstItem = false;
-            } else if (frag instanceof CssRule) {
-                // Rules with double newline separation
-                if (!firstItem) {
-                    sb.append("\n\n");
+                case CssComment cmnt -> {
+                    // Comments on their own line
+                    if (!firstItem) {
+                        // the comments are either block or line
+                        sb.append("\n");
+                        if (cmnt.isBlock()) sb.append("\n");
+                    }
+                    sb.append(frag.delegatedCharSeqVal());
+                    firstItem = false;
                 }
-                sb.append(frag.delegatedCharSeqVal());
-                firstItem = false;
-            } else if (frag instanceof MediaQuery) {
-                // Media queries with double newline separation
-                if (!firstItem) {
-                    sb.append("\n\n");
+                case CssRule ignored -> {
+                    // Rules with double newline separation
+                    if (!firstItem) {
+                        sb.append("\n\n");
+                    }
+                    sb.append(frag.delegatedCharSeqVal());
+                    firstItem = false;
                 }
-                sb.append(frag.delegatedCharSeqVal());
-                firstItem = false;
-            } else if (frag instanceof CssRules) {
-                // Nested CssRules (from rulesFrom)
-                if (!firstItem) {
-                    sb.append("\n\n");
+                case MediaQuery ignored -> {
+                    // Media queries with double newline separation
+                    if (!firstItem) {
+                        sb.append("\n\n");
+                    }
+                    sb.append(frag.delegatedCharSeqVal());
+                    firstItem = false;
                 }
-                sb.append(frag.delegatedCharSeqVal());
-                firstItem = false;
+                case FontFace ignored -> {
+                    // @font-face rules with double newline separation
+                    if (!firstItem) {
+                        sb.append("\n\n");
+                    }
+                    sb.append(frag.delegatedCharSeqVal());
+                    firstItem = false;
+                }
+                case Supports ignored -> {
+                    // @supports rules with double newline separation
+                    if (!firstItem) {
+                        sb.append("\n\n");
+                    }
+                    sb.append(frag.delegatedCharSeqVal());
+                    firstItem = false;
+                }
+                case ContainerQuery ignored -> {
+                    // @container queries with double newline separation
+                    if (!firstItem) {
+                        sb.append("\n\n");
+                    }
+                    sb.append(frag.delegatedCharSeqVal());
+                    firstItem = false;
+                }
+                case Layer ignored -> {
+                    // @layer rules with double newline separation
+                    if (!firstItem) {
+                        sb.append("\n\n");
+                    }
+                    sb.append(frag.delegatedCharSeqVal());
+                    firstItem = false;
+                }
+                case Layer.LayerOrder ignored -> {
+                    // @layer order declarations with double newline separation
+                    if (!firstItem) {
+                        sb.append("\n\n");
+                    }
+                    sb.append(frag.delegatedCharSeqVal());
+                    firstItem = false;
+                }
+                case CssRules ignored -> {
+                    // Nested CssRules (from rulesFrom)
+                    if (!firstItem) {
+                        sb.append("\n\n");
+                    }
+                    sb.append(frag.delegatedCharSeqVal());
+                    firstItem = false;
+                }
             }
         }
 
@@ -210,11 +256,16 @@ public final class CssRules implements CssRuleFrag {
     public static CssRules rulesFrom(CssRuleFrag ... fragments) {
         Object[] expandedItems = Arrays.stream(fragments)
             .flatMap(frag -> switch (frag) {
-                    case CssRule rule -> java.util.stream.Stream.of(rule);
+                    case CssRule rule -> Stream.of(rule);
                     case CssRules rules -> Arrays.stream(rules.orderedFragments);
-                    case MediaQuery mq -> java.util.stream.Stream.of(mq);
-                    case CssComment comment -> java.util.stream.Stream.of(comment);
-                    case CssEmptyLine emptyLine -> java.util.stream.Stream.of(emptyLine);
+                    case MediaQuery mq -> Stream.of(mq);
+                    case FontFace ff -> Stream.of(ff);
+                    case Supports sup -> Stream.of(sup);
+                    case ContainerQuery cq -> Stream.of(cq);
+                    case Layer layer -> Stream.of(layer);
+                    case Layer.LayerOrder lo -> Stream.of(lo);
+                    case CssComment comment -> Stream.of(comment);
+                    case CssEmptyLine emptyLine -> Stream.of(emptyLine);
                 }
             )
             .toArray();

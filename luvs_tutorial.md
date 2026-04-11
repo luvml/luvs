@@ -41,8 +41,12 @@ import static luvs.HtmlTag.*;     // HTML tag selectors: div, span, input, etc.
 import static luvs.CssRule.rule;  // Explicit rule creation
 import static luvs.CssRules.*;    // rules(), rulesFrom(), forEachRule(), etc.
 import static luvs.CssProp.*;     // Property name constants: TRANSFORM, ALL, etc.
-import static luvs.MQ.*;            // Media queries: media(), minWidth(), prefersColorScheme(), etc.
-import static luvs.CssComment.*;    // CSS comments: comment(), commentBlock()
+import static luvs.MQ.*;          // Media queries: media(), minWidth(), prefersColorScheme(), etc.
+import static luvs.FontFace.*;    // Font faces: fontFace(), fontFamily(), src(), etc.
+import static luvs.Supports.*;    // Feature queries: supports(), property(), etc.
+import static luvs.ContainerQuery.*;  // Container queries: container(), minWidth(), etc.
+import static luvs.Layer.*;       // Cascade layers: layer(), layerOrder()
+import static luvs.CssComment.*;  // CSS comments: comment(), commentBlock()
 import static luvs.CssEmptyLine.emptyLine;  // Empty lines for visual separation
 ```
 
@@ -226,6 +230,49 @@ Timing function constants: `EASE`, `LINEAR`, `EASE_IN`, `EASE_OUT`, `EASE_IN_OUT
 
 There are multiple ways to build CSS selectors, from simple to complex.
 
+### 📋 Best Practice: Fluent DSL + CSS Comments
+
+**IMPORTANT:** When learning LuvS or working with AI assistants, follow these rules:
+
+1. **Always use the fluent DSL** - don't construct verbose `selector(...)` calls manually
+2. **Add CSS comments next to selectors** - show the expected CSS output for clarity
+
+**✅ GOOD - Fluent DSL with CSS reference:**
+```java
+// Compound selector
+video_chip.disabled().____(...)              // .video_chip:disabled
+
+// Child combinator
+container.child(div).____(...)               // .container > div
+
+// Descendant with pseudo-class
+nav.descendant(a.hover()).____(...)          // nav a:hover
+
+// Attribute selector
+input.typeCheckbox().____(...)               // input[type="checkbox"]
+
+// Complex chaining
+video_chip.child(input.typeCheckbox().checked()).____(...)
+// .video_chip > input[type="checkbox"]:checked
+```
+
+**❌ BAD - Verbose selector() calls:**
+```java
+// Don't do this - hard to read, defeats the purpose of the DSL
+selector(video_chip, ">", div).____(...)                    // verbose!
+selector(nav, " ", a, ":hover").____(...)                   // error-prone!
+selector("input[type='checkbox']").____(...)                // not type-safe!
+```
+
+**Why this matters:**
+- **Readability** - fluent DSL reads like natural method chaining
+- **Type safety** - catches typos at compile time
+- **AI assistance** - CSS comments help AI understand your intent clearly
+- **Learning** - seeing the CSS output reinforces the mapping
+- **Maintenance** - find-all-references, rename-symbol work correctly
+
+As you gain experience, you can omit the CSS comments, but they're invaluable when starting out or when selectors get complex.
+
 ### HtmlTag Enum
 
 Type-safe HTML tag names. These are enum constants that work directly as selectors:
@@ -251,6 +298,7 @@ Available tags: `body`, `div`, `span`, `p`, `a`, `h1`-`h6`, `ul`, `ol`, `li`, `t
 Special selectors (prefixed with `$` to distinguish from HTML tags):
 - `$all` maps to the CSS universal selector `*`
 - `$root` maps to the CSS `:root` pseudo-class
+- `$$backdrop` maps to the CSS `::backdrop` pseudo-element
 
 ### CssClass Enum
 
@@ -285,18 +333,23 @@ div(class_(container, "legacy-class"), ...)
 
 ### Selector (Fluent Builder)
 
-For complex selectors, use the `Selector` class:
+The `Selector` class is rarely needed directly - prefer the fluent methods on `CssClass` and `HtmlTag` shown earlier.
+
+**Use `Selector` only for rare edge cases** like custom selectors not covered by the DSL:
 
 ```java
-// Explicit parts
-selector(container, ">", div).____(...)      // .container > div { ... }
-selector(container).child(p).____(...)       // .container > p { ... }
-selector(container).descendant(a).____(...)  // .container a { ... }
+// String-based selectors (escape hatch for uncommon cases)
+selector("[dir='rtl']").____(...)             // [dir='rtl'] { ... }
+selector(":is(h1, h2, h3)").____(...)         // :is(h1, h2, h3) { ... }
 
-// String-based (escape hatch)
-selector(":root").____(...)                  // :root { ... }
-selector("header").____(...)                 // header { ... }
+// For normal cases, the fluent DSL is already available:
+$root.____(...)                               // ✅ :root { ... }
+$$backdrop.____(...)                          // ✅ ::backdrop { ... }
+container.child(div).____(...)                // ✅ .container > div - PREFER THIS
+// NOT: selector(container, ">", div).____(...)  ❌ verbose, don't do this
 ```
+
+The fluent DSL (`container.child(div)`, `btn.hover()`, `$root`, `$$backdrop`, etc.) is more readable and leverages mixins properly.
 
 ### Pseudo-classes (Chainable)
 
@@ -363,6 +416,8 @@ div.__("data-theme", "dark").__("data-variant", "compact").____(...)
 
 ### Combinators
 
+**Use the fluent DSL methods below** - avoid constructing verbose `selector(part1, ">", part2)` calls manually. The fluent API is more readable and type-safe.
+
 Direct chaining from `HtmlTag` and `CssClass`:
 
 ```java
@@ -417,18 +472,21 @@ container.rule(display(FLEX), gap(rem(1)))
 
 ### CssRule
 
-A single CSS rule (selector + properties):
+A single CSS rule (selector + properties). **Always use the `____()` method** on selectors:
 
 ```java
-// Via ____() on a selector (preferred)
-body.____(margin(ZERO), padding(ZERO))
-
-// Via static factory
-rule("body", margin(ZERO), padding(ZERO))
-
-// Via CssRule.rule()
-CssRule.rule(tag("body"), margin(ZERO), padding(ZERO))
+body.____(margin(ZERO), padding(ZERO))  // body { margin: 0; padding: 0; }
 ```
+
+**CSS Output:**
+```css
+body {
+    margin: 0;
+    padding: 0;
+}
+```
+
+That's it! Don't use verbose constructors like `CssRule.rule(...)` or `rule(...)` - they exist for internal use but defeat the purpose of the fluent DSL.
 
 ### CssRules
 
@@ -436,6 +494,7 @@ A collection of CSS rules. This is what you typically return from style methods:
 
 ```java
 import static luvs.CssRules.rules;
+import static com.myapp.Styles.*;  // Assuming Styles enum defines container, btn
 
 public static CssRules appRules() {
     return rules(
@@ -443,6 +502,23 @@ public static CssRules appRules() {
         container.____(width(percent(80)), margin(ZERO, AUTO)),
         btn.hover().____(background(PRIMARY_DARK))
     );
+}
+```
+
+**CSS Output:**
+```css
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 80%;
+    margin: 0 auto;
+}
+
+.btn:hover {
+    background: #5568d3;
 }
 ```
 
@@ -475,7 +551,7 @@ import static luvs.CssComment.commentBlock;
 import static luvs.CssEmptyLine.emptyLine;
 
 var css = rules(
-    comment("=== Reset and Base Styles ==="),
+    commentBlock("=== Reset and Base Styles ==="),
     $all.____(margin(ZERO), padding(ZERO)),
     body.____(font_family("system-ui", "sans-serif")),
     emptyLine(),
@@ -629,24 +705,36 @@ public enum AppVars implements CssVariable {
 
 Underscores in enum names map to hyphens: `primary_color` becomes `--primary-color`.
 
+**Use static imports for clean syntax:**
+
 ```java
+import static com.myapp.AppVars.*;
+
 // Define in :root
 $root.____(
-    AppVars.primary_color.def("#007bff"),
-    AppVars.spacing_unit.def(px(20)),
-    AppVars.header_height.def(px(60))
+    primary_color.def("#007bff"),
+    spacing_unit.def(px(20)),
+    header_height.def(px(60))
 )
+```
 
-// Use with .ref()
-color(AppVars.primary_color.ref())               // color: var(--primary-color);
-padding(AppVars.spacing_unit.ref())               // padding: var(--spacing-unit);
+**CSS Output:**
+```css
+:root {
+    --primary-color: #007bff;
+    --spacing-unit: 20px;
+    --header-height: 60px;
+}
+```
+
+**Use with .ref():**
+
+```java
+color(primary_color.ref())               // color: var(--primary-color);
+padding(spacing_unit.ref())               // padding: var(--spacing-unit);
 
 // With fallback
-color(AppVars.primary_color.ref("#000"))           // color: var(--primary-color, #000);
-
-// If you static import AppVars.*
 color(primary_color.ref("#000"))           // color: var(--primary-color, #000);
-
 ```
 
 There is also a non-enum approach using `V.var()`:
@@ -776,13 +864,30 @@ var notPrint = media(not(print()),
 ### Dark Mode
 
 ```java
+import static com.myapp.AppVars.*;
+
 var darkMode = media(prefersColorScheme(DARK),
     $root.____(
-        AppVars.primary_color.def("#90caf9"),
-        AppVars.bg_color.def("#121212")
+        primary_color.def("#90caf9"),
+        bg_color.def("#121212")
     ),
     body.____(background_color("#121212"), color("#e0e0e0"))
 );
+```
+
+**CSS Output:**
+```css
+@media (prefers-color-scheme: dark) {
+    :root {
+        --primary-color: #90caf9;
+        --bg-color: #121212;
+    }
+
+    body {
+        background-color: #121212;
+        color: #e0e0e0;
+    }
+}
 ```
 
 ### Escape Hatches
@@ -863,6 +968,595 @@ var tablet = MQ.media(MQ.minWidth(px(768)),
 );
 ```
 
+## Font Faces (`FontFace`)
+
+Define custom fonts with `@font-face`:
+
+```java
+import static luvs.FontFace.*;
+import static luvs.FontDisplay.*;
+
+var customFont = fontFace(
+    fontFamily("MyCustomFont"),
+    src(
+        url("fonts/myfont.woff2"),
+        format("woff2")
+    ),
+    fontWeight("400"),
+    fontStyle("normal"),
+    fontDisplay(SWAP)
+);
+```
+
+**CSS Output:**
+```css
+@font-face {
+    font-family: "MyCustomFont";
+    src: url("fonts/myfont.woff2"), format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+```
+
+### Multiple Sources with Fallbacks
+
+```java
+fontFace(
+    fontFamily("Inter"),
+    src(
+        local("Inter"),
+        urlFormat("fonts/inter.woff2", "woff2"),
+        urlFormat("fonts/inter.woff", "woff"),
+        url("fonts/inter.ttf")
+    ),
+    fontWeight(300, 900), // Variable font weight range
+    unicodeRange("U+0000-00FF")
+);
+```
+
+### Font Descriptors
+
+- `fontFamily(name)` - Font family name (required, auto-quoted)
+- `src(sources...)` - Font sources (required)
+- `fontWeight(weight)` or `fontWeight(min, max)` - Weight or range
+- `fontStyle(style)` - Font style (normal, italic, oblique)
+- `fontDisplay(display)` - Loading behavior (SWAP, BLOCK, FALLBACK, OPTIONAL, AUTO)
+- `unicodeRange(range)` - Unicode character range
+- `fontStretch(value)` - Font stretch property
+- `fontVariant(value)` - Font variant property
+
+### Helper Functions
+
+- `url(path)` - Font URL
+- `format(type)` - Format hint ("woff2", "woff", "truetype", "opentype", "svg")
+- `local(name)` - Local font name
+- `urlFormat(path, format)` - Combined URL and format
+
+## Feature Queries (`Supports`)
+
+Progressive enhancement with `@supports`:
+
+```java
+import static luvs.Supports.*;
+
+// Basic feature check
+supports(
+    property("display", "grid"),
+    container.____(display(GRID))
+);
+```
+
+**CSS Output:**
+```css
+@supports (display: grid) {
+    .container {
+        display: grid;
+    }
+}
+```
+
+### Logical Operators
+
+```java
+// AND operator (instance method)
+supports(
+    property("display", "flex").and(property("gap", "1rem")),
+    div.____( display(FLEX), gap(rem(1)) )
+);
+// → @supports (display: flex) and (gap: 1rem) { ... }
+
+// OR operator
+supports(
+    property("backdrop-filter", "blur(10px)")
+        .or(property("-webkit-backdrop-filter", "blur(10px)")),
+    modal.____( backdrop_filter("blur(10px)") )
+);
+// → @supports (backdrop-filter: blur(10px)) or (-webkit-backdrop-filter: blur(10px)) { ... }
+
+// NOT operator (static method)
+supports(
+    SupportsCondition.not(property("display", "grid")),
+    div.____( display(FLEX) )
+);
+// → @supports not (display: grid) { ... }
+```
+
+### Condition Types
+
+- `property(name, value)` - Property-value check
+- `selector(selector)` - Selector support check
+- `condition(raw)` - Raw condition string (escape hatch)
+
+## Container Queries (`ContainerQuery`)
+
+Container-based responsive design:
+
+```java
+import static luvs.ContainerQuery.*;
+
+// Define a container
+div.____(
+    P.container_type("inline-size"),  // Make this a query container
+    P.container_name("card")          // Optional name
+);
+
+// Anonymous container query
+container(
+    minWidth(px(400)),
+    card.____(
+        display(GRID),
+        grid_template_columns("1fr 1fr")
+    )
+);
+```
+
+**CSS Output:**
+```css
+div {
+    container-type: inline-size;
+    container-name: card;
+}
+
+@container (min-width: 400px) {
+    .card {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+}
+```
+
+### Named Containers
+
+```java
+// Query a specific named container
+container(
+    "sidebar",  // Container name
+    minWidth(px(300)),
+    nav.____(display(BLOCK))
+);
+// → @container sidebar (min-width: 300px) { ... }
+```
+
+### Container Conditions
+
+Size conditions:
+- `minWidth(value)`, `maxWidth(value)`
+- `minHeight(value)`, `maxHeight(value)`
+- `minInlineSize(value)`, `maxInlineSize(value)`
+- `minBlockSize(value)`, `maxBlockSize(value)`
+
+Other conditions:
+- `aspectRatio(ratio)` - e.g., `aspectRatio("16/9")`
+- `orientation(value)` - "portrait" or "landscape"
+- `condition(raw)` - Raw condition string
+
+### Logical Operators
+
+```java
+// AND operator (instance method)
+container(
+    minWidth(px(400)).and(maxWidth(px(800))),
+    card.____(padding(rem(2)))
+);
+
+// OR operator
+container(
+    minWidth(px(600)).or(orientation("landscape")),
+    grid.____(grid_template_columns("repeat(3, 1fr)"))
+);
+
+// NOT operator (static method)
+container(
+    ContainerCondition.not(minWidth(px(400))),
+    card.____(flex_direction(COLUMN))
+);
+```
+
+### Container Properties
+
+Set these on elements to make them query containers:
+
+```java
+div.____(
+    P.container_type("inline-size"),  // size | inline-size | normal
+    P.container_name("myContainer"),  // Optional name
+    P.container("inline-size / myContainer")  // Shorthand
+);
+```
+
+## Cascade Layers (`Layer`)
+
+Control CSS specificity with `@layer`:
+
+```java
+import static luvs.Layer.*;
+
+// Layer order declaration (define priority)
+layerOrder("reset", "base", "components", "utilities");
+// → @layer reset, base, components, utilities;
+
+// Anonymous layer
+layer(
+    $all.____(box_sizing(BORDER_BOX))
+);
+// → @layer { * { box-sizing: border-box; } }
+
+// Named layer
+layer("reset",
+    body.____(margin(ZERO), padding(ZERO))
+);
+// → @layer reset { body { margin: 0; padding: 0; } }
+
+// Nested layers
+layer("components.button",
+    btn.____(padding(rem(1)))
+);
+// → @layer components.button { .btn { padding: 1rem; } }
+```
+
+**Complete Example:**
+```java
+rulesFrom(
+    // 1. Declare layer order (lowest to highest priority)
+    layerOrder("reset", "base", "theme", "components", "utilities"),
+
+    // 2. Define layers
+    layer("reset",
+        $all.____(margin_block(ZERO), padding_inline(ZERO))
+    ),
+
+    layer("base",
+        body.____(font_family("system-ui"), line_height("1.5"))
+    ),
+
+    layer("components",
+        btn.____(padding(rem(0.5), rem(1)), border_radius(px(4)))
+    ),
+
+    // 3. Unlayered styles have highest priority
+    div.important().____(color(RED))  // Outside any layer = highest priority
+);
+```
+
+**CSS Output:**
+```css
+@layer reset, base, theme, components, utilities;
+
+@layer reset {
+    * {
+        margin-block: 0;
+        padding-inline: 0;
+    }
+}
+
+@layer base {
+    body {
+        font-family: system-ui;
+        line-height: 1.5;
+    }
+}
+
+@layer components {
+    .btn {
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+    }
+}
+
+.important {
+    color: red;
+}
+```
+
+## New CSS Properties
+
+### Backdrop Filter & Clip Path
+
+```java
+// Backdrop filter (glassmorphism)
+modal.____(
+    backdrop_filter("blur(10px) saturate(180%)")
+); // .modal { backdrop-filter: blur(10px) saturate(180%); }
+
+// Clip path (complex shapes)
+polygon.____(
+    clip_path("polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)")
+); // .polygon { clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+```
+
+### Scroll Properties
+
+```java
+// Smooth scrolling
+body.____(
+    scroll_behavior("smooth")
+);
+
+// Scroll snap
+container.____(
+    scroll_snap_type("y mandatory"),
+    scroll_snap_align("start"),
+    scroll_snap_stop("always"),
+    scroll_margin(px(20)),
+    scroll_padding(px(10), px(20)),
+    overscroll_behavior("contain")
+);
+```
+
+### Performance Hints
+
+```java
+animated_element.____(
+    will_change("transform", "opacity"),  // Hint browser about changes
+    contain("layout style"),              // Containment for performance
+    content_visibility("auto")            // Render only visible content
+);
+```
+
+### Interaction Properties
+
+```java
+text_element.____(
+    user_select("none"),       // Prevent text selection
+    pointer_events("none"),    // Disable pointer interactions
+    touch_action("pan-y")      // Touch gesture handling
+);
+```
+
+### Aspect Ratio
+
+```java
+// Video container with 16:9 ratio
+video_wrapper.____(
+    aspect_ratio(16, 9)  // Helper method
+);
+
+// Image with square ratio
+avatar.____(
+    aspect_ratio("1 / 1")  // String format
+);
+```
+
+### Logical Properties
+
+Modern, internationalization-friendly properties:
+
+```java
+article.____(
+    // Margins (adapt to writing direction)
+    margin_inline(px(20)),         // Left/right in LTR, top/bottom in vertical
+    margin_inline_start(px(10)),   // Left in LTR, right in RTL
+    margin_block(px(30)),          // Top/bottom in horizontal writing
+
+    // Padding
+    padding_inline(px(20)),
+    padding_block(px(10)),
+
+    // Borders
+    border_inline("1px solid black"),
+    border_block_start_color("red"),
+
+    // Positioning
+    inset_inline_start(px(0)),     // left in LTR, right in RTL
+    inset_block_end(px(10)),       // bottom in horizontal
+
+    // Size
+    inline_size(percent(100)),     // width in horizontal
+    block_size("auto"),            // height in horizontal
+    max_inline_size(px(600))
+);
+```
+
+### Text Decoration
+
+```java
+link.____(
+    text_decoration_color("blue"),
+    text_decoration_style("wavy"),
+    text_decoration_thickness(px(2)),
+    text_underline_offset(px(3))
+);
+```
+
+### Grid Named Areas
+
+```java
+layout.____(
+    grid_template_areas(
+        "\"header header header\"\n" +
+        "\"sidebar main main\"\n" +
+        "\"footer footer footer\""
+    )
+);
+
+header_el.____(
+    grid_area("header")
+);
+```
+
+## Advanced CSS Features
+
+### Color Functions
+
+**color-mix()** - Mix colors in various color spaces:
+
+```java
+import static luvs.V.*;
+
+div.____(
+    color(colorMix("in srgb", "red", "50%", "blue")),
+    // → color: color-mix(in srgb, red 50%, blue);
+
+    background(colorMix("in oklch", "blue", "blue")),  // 50/50 default
+    // → background: color-mix(in oklch, blue, blue);
+
+    border_color(colorMix("in hsl", "red", "30%", "yellow", "70%"))
+    // → border-color: color-mix(in hsl, red 30%, yellow 70%);
+);
+```
+
+Color spaces: `"in srgb"`, `"in oklch"`, `"in hsl"`, `"in hwb"`, `"in lab"`, `"in oklab"`, `"in lch"`
+
+**Relative Color Syntax** - Derive new colors from existing:
+
+```java
+div.____(
+    // Derive from RGB
+    color(rgbFrom("var(--primary)", "r g b / 0.5")),
+    // → color: rgb(from var(--primary) r g b / 0.5);
+
+    // Derive from HSL with modifications
+    background(hslFrom("blue", "h s calc(l * 1.2)")),
+    // → background: hsl(from blue h s calc(l * 1.2));
+
+    // Modern OKLCH color space
+    border_color(oklchFrom("var(--accent)", "l c h / 0.8")),
+    // → border-color: oklch(from var(--accent) l c h / 0.8);
+
+    // OKLAB
+    box_shadow(oklabFrom("#ff0000", "l a b / 0.6"))
+    // → box-shadow: oklab(from #ff0000 l a b / 0.6);
+);
+```
+
+### Text Wrapping
+
+```java
+h1.____(
+    P.text_wrap("balance")  // Balance line lengths in headings
+);
+
+p.____(
+    P.text_wrap("pretty")   // Better line breaks for paragraphs
+);
+```
+
+### Subgrid
+
+```java
+parent.____(
+    display(GRID),
+    grid_template_columns("repeat(3, 1fr)")
+);
+
+// Child inherits parent's grid tracks
+child.____(
+    display(GRID),
+    grid_template_columns(V.SUBGRID),  // Aligns with parent
+    grid_template_rows(V.SUBGRID)
+);
+```
+
+## Custom CSS Functions (Pro-Tip)
+
+You can create reusable CSS patterns as Java methods. They work with **static values only** (not runtime), but are great for maintaining consistency:
+
+```java
+// Custom button variant generator
+public static CssRule buttonVariant(CssClass btnClass, String color, String hoverColor) {
+    return btnClass.____(
+        background(color),
+        color(WHITE),
+        border(NONE),
+        padding(rem(0.75), rem(1.5)),
+        border_radius(px(6)),
+        cursor(POINTER),
+        transition("background 0.2s"),
+
+        P.hover().____( background(hoverColor) )
+    );
+}
+
+// Usage
+rulesFrom(
+    buttonVariant(btn_primary, "#007bff", "#0056b3"),
+    buttonVariant(btn_danger, "#dc3545", "#bd2130")
+);
+```
+
+**CSS Output:**
+```css
+.btn_primary {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn_primary:hover {
+    background: #0056b3;
+}
+
+.btn_danger {
+    background: #dc3545;
+    /* ... same structure ... */
+}
+```
+
+**More Examples:**
+
+```java
+// Responsive spacing utility
+public static CssRule spacing(CssClass cls, int sm, int md, int lg) {
+    return rulesFrom(
+        cls.____(padding(px(sm))),
+
+        media(minWidth(px(768)),
+            cls.____(padding(px(md)))
+        ),
+
+        media(minWidth(px(1024)),
+            cls.____(padding(px(lg)))
+        )
+    ).getRules()[0]; // Extract as single rule
+}
+
+// Card elevation levels
+public static CssProperty elevation(int level) {
+    return box_shadow(
+        ZERO,
+        px(level * 2),
+        px(level * 4),
+        rgba(0, 0, 0, 0.1 * level)
+    );
+}
+
+// Usage
+card_1.____(elevation(1));  // Subtle shadow
+card_2.____(elevation(3));  // Medium shadow
+card_3.____(elevation(5));  // Strong shadow
+```
+
+This approach gives you:
+- **Reusability** - Define once, use everywhere
+- **Type safety** - Compiler catches errors
+- **Refactorability** - IDE rename works across all usages
+- **Composability** - Combine functions to build complex patterns
+
 ## Organization Patterns
 
 LuvS gives you freedom to organize CSS however you want. Here are common patterns.
@@ -877,14 +1571,33 @@ public enum AppStyles implements CssClass {
 
     public static CssRules appRules() {
         return rules(
-            container.____(width(percent(80)), margin(ZERO, AUTO)),
-            card.____(background(WHITE), border_radius(px(8)), padding(rem(1.5))),
-            header.____(background(PRIMARY), color(WHITE)),
-            btn.____(display(INLINE_BLOCK), padding(rem(0.5), rem(1)))
+
+            container.____( // .container
+                width(percent(80)),
+                margin(ZERO, AUTO)
+            ),
+
+            card.____( // .card
+                background(WHITE),
+                border_radius(px(8)),
+                padding(rem(1.5))
+            ),
+
+            header.____( // .header
+                background(PRIMARY),
+                color(WHITE)
+            ),
+
+            btn.____( // .btn
+                display(INLINE_BLOCK),
+                padding(rem(0.5), rem(1))
+            )
         );
     }
 }
 ```
+
+**Note:** With IDE support like rainbow braces (each `(` `)` pair gets a different color), this code is actually very readable. Even without it, the structure is clear and easy to scan.
 
 This pattern is similar to how Tailwind co-locates styles with components, but with real abstractions. You can ctrl+click from usage to definition, rename with IDE refactoring, and the compiler catches misspelled class names.
 
@@ -895,10 +1608,14 @@ For larger apps, organize styles into separate files by concern (similar to trad
 ```java
 // Colors.java - central color palette
 public final class Colors {
-    public static final String PRIMARY = "#667eea";
-    public static final String PRIMARY_DARK = "#5568d3";
-    public static final String TEXT_DARK = "#333";
-    // ...
+    public static final String
+        PRIMARY = "#667eea",
+        PRIMARY_DARK = "#5568d3",
+        TEXT_DARK = "#333",
+        BORDER_LIGHT = "#ddd",
+        BG_LIGHT = "#f5f5f5"
+    ;
+    // ... more colors
 }
 
 // AppStyles.java - main layout and component styles
@@ -1225,30 +1942,29 @@ Assemble with `rulesFrom()` — it accepts any mix of `CssRuleFrag` (rules, comm
 ```java
 public static CssRules allAppStyles() {
     return rulesFrom(
-        comment("=== Utility Classes ==="),
+        commentBlock("=== Utility Classes ==="),
         Tw.allRules(),
         emptyLine(),
 
-        comment("=== Component Shortcuts ==="),
+        commentBlock("=== Component Shortcuts ==="),
         Shortcut.allRules(),
         emptyLine(),
 
-        comment("=== Interactive Effects ==="),
+        commentBlock("=== Interactive Effects ==="),
         hoverLift(case_card),
         emptyLine(),
 
-        comment("=== Button Variants ==="),
+        commentBlock("=== Button Variants ==="),
         buttonVariant(btn_primary, PRIMARY, PRIMARY_DARK),
         buttonVariant(btn_danger, DANGER, DANGER_DARK),
-        emptyLine(),
 
-        comment("=== Data-Driven Category Styles ==="),
+        commentBlock("=== Data-Driven Category Styles ==="),
         forEachRule(CATEGORIES, cat ->
             cat_btn.__data("category-id", cat.id()).____( background_color(cat.color()) )
         ),
         emptyLine(),
 
-        comment("=== App-Specific Styles ==="),
+        commentBlock("=== App-Specific Styles ==="),
         AppStyles.appRules()
     );
 }
@@ -1281,11 +1997,14 @@ import static luvml.C.*;
 import static luvml.T.text;
 import static luvs.P.*;
 import static luvs.V.*;
-import static luvs.Selector.selector;
 import static luvs.HtmlTag.*;
 import static luvs.CssRules.*;
 import static luvs.CssProp.*;
 import luvml.o.HtmlRenderer;
+
+// Static import inner enums for cleaner syntax (no Cls. or Theme. prefix needed)
+import static TodoApp.Cls.*;
+import static TodoApp.Theme.*;
 
 public class TodoApp {
 
@@ -1300,39 +2019,39 @@ public class TodoApp {
     static CssRules styles() {
         return rules(
             // CSS variables
-            $root.____(
-                Theme.bg_color.def("#f5f5f5"),
-                Theme.text_color.def("#333"),
-                Theme.accent.def("#4a90d9")
+            $root.____( // :root
+                bg_color.def("#f5f5f5"),
+                text_color.def("#333"),
+                accent.def("#4a90d9")
             ),
 
             // Reset
-            $all.____(
+            $all.____( // *
                 margin(ZERO), padding(ZERO), box_sizing(BORDER_BOX)
             ),
 
-            body.____(
+            body.____( // body
                 font_family("system-ui", "sans-serif"),
-                background_color(Theme.bg_color.ref()),
-                color(Theme.text_color.ref())
+                background_color(bg_color.ref()),
+                color(text_color.ref())
             ),
 
             // Layout
-            Cls.app.____(
+            app.____( // .app
                 max_width(px(600)),
                 margin(rem(2), AUTO),
                 padding(ZERO, rem(1))
             ),
 
             // List
-            Cls.todo_list.____(
+            todo_list.____( // .todo_list
                 display(FLEX),
                 flex_direction(COLUMN),
                 gap(rem(0.5))
             ),
 
             // Items
-            Cls.todo_item.____(
+            todo_item.____( // .todo_item
                 display(FLEX),
                 align_items(AI_CENTER),
                 padding(rem(1)),
@@ -1342,20 +2061,20 @@ public class TodoApp {
                 transition(TRANSFORM, s(0.2), BOX_SHADOW, s(0.2))
             ),
 
-            Cls.todo_item.hover().____(
+            todo_item.hover().____( // .todo_item:hover
                 transform(translateY(px(-2))),
                 box_shadow(ZERO, px(4), px(8), rgba(0, 0, 0, 0.15))
             ),
 
             // Completed state
-            Cls.completed.____(
+            completed.____( // .completed
                 P.opacity(0.6),
                 text_decoration("line-through")
             ),
 
             // Button
-            Cls.add_btn.____(
-                background(Theme.accent.ref()),
+            add_btn.____( // .add_btn
+                background(accent.ref()),
                 color(WHITE),
                 border("none"),
                 padding(rem(0.75), rem(1.5)),
@@ -1365,11 +2084,11 @@ public class TodoApp {
                 transition(BACKGROUND, s(0.3))
             ),
 
-            Cls.add_btn.hover().____(
+            add_btn.hover().____( // .add_btn:hover
                 P.opacity(0.9)
             ),
 
-            Cls.add_btn.disabled().____(
+            add_btn.disabled().____( // .add_btn:disabled
                 P.opacity(0.5),
                 cursor(NOT_ALLOWED)
             )
@@ -1383,13 +2102,13 @@ public class TodoApp {
                 style(styles())
             ),
             body(
-                div(class_(Cls.app),
+                div(class_(app),
                     h1("My Todos"),
-                    div(class_(Cls.todo_list),
-                        div(class_(Cls.todo_item), text("Learn LuvS")),
-                        div(class_(Cls.todo_item, Cls.completed), text("Set up project"))
+                    div(class_(todo_list),
+                        div(class_(todo_item), text("Learn LuvS")),
+                        div(class_(todo_item, completed), text("Set up project"))
                     ),
-                    luvml.E.button(class_(Cls.add_btn), text("Add Todo"))
+                    luvml.E.button(class_(add_btn), text("Add Todo"))
                 )
             )
         );
@@ -1486,12 +2205,18 @@ In luvs, since styles are Java, a shared `Colors.java` file works across any num
 
 ```java
 public final class Colors {
-    public static final String PRIMARY = "#667eea";
-    public static final String BORDER_LIGHT = "#ddd";
-    public static final String TEXT_MUTED = "#666";
-    // ...
+    public static final String
+        PRIMARY = "#667eea",
+        PRIMARY_DARK = "#5568d3",
+        BORDER_LIGHT = "#ddd",
+        TEXT_MUTED = "#666",
+        BG_DARK = "#1a1a1a"
+    ;
+    // ... more colors
 }
 ```
+
+**💡 Pro-tip:** Use multi-field declarations like above (not one field per line) to reduce verbosity. This is standard Java - it makes your code more concise without sacrificing clarity. Avoiding unnecessarily verbose patterns makes LuvS look better and your code more maintainable.
 
 Any style file does `import static Colors.*` and uses the same palette. A new component picks from the existing constants instead of hardcoding a slightly-off `#6a7fcb`. This is just standard Java — nothing special about luvs here — but it's a benefit of styles being code rather than a separate string-based language.
 
