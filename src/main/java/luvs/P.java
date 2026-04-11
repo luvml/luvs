@@ -68,6 +68,10 @@ public final class P {
 
     public static CssProperty font_family(CharSequence... values) { return prop("font-family", String.join(", ", values)); }
 
+    // Font shorthand: font-style font-variant font-weight font-size/line-height font-family
+    // Example: font("italic small-caps bold 16px/1.5 Arial, sans-serif")
+    public static CssProperty font(CharSequence value) { return prop("font", value); }
+
     public static CssProperty text_align(TextAlign value) { return prop("text-align", value); }
     public static CssProperty text_align(CharSequence value) { return prop("text-align", value); }
 
@@ -78,6 +82,9 @@ public final class P {
 
     public static CssProperty font_style(FontStyle value) { return prop("font-style", value); }
     public static CssProperty font_style(CharSequence value) { return prop("font-style", value); }
+
+    public static CssProperty font_variant(CharSequence value) { return prop("font-variant", value); }
+    public static CssProperty font_stretch(CharSequence value) { return prop("font-stretch", value); }
 
     public static CssProperty white_space(WhiteSpace value) { return prop("white-space", value); }
     public static CssProperty white_space(CharSequence value) { return prop("white-space", value); }
@@ -101,7 +108,28 @@ public final class P {
     public static CssProperty border_bottom(CharSequence... values) { return prop("border-bottom", joinValues(values)); }
     public static CssProperty border_left(CharSequence... values) { return prop("border-left", joinValues(values)); }
     public static CssProperty border_color(CharSequence value) { return prop("border-color", value); }
+    public static CssProperty border_width(CharSequence... values) { return prop("border-width", joinValues(values)); }
+    public static CssProperty border_style(CharSequence value) { return prop("border-style", value); }
+
+    // Individual border side properties
+    public static CssProperty border_top_width(CharSequence value) { return prop("border-top-width", value); }
+    public static CssProperty border_top_style(CharSequence value) { return prop("border-top-style", value); }
+    public static CssProperty border_top_color(CharSequence value) { return prop("border-top-color", value); }
+    public static CssProperty border_right_width(CharSequence value) { return prop("border-right-width", value); }
+    public static CssProperty border_right_style(CharSequence value) { return prop("border-right-style", value); }
+    public static CssProperty border_right_color(CharSequence value) { return prop("border-right-color", value); }
+    public static CssProperty border_bottom_width(CharSequence value) { return prop("border-bottom-width", value); }
+    public static CssProperty border_bottom_style(CharSequence value) { return prop("border-bottom-style", value); }
+    public static CssProperty border_bottom_color(CharSequence value) { return prop("border-bottom-color", value); }
+    public static CssProperty border_left_width(CharSequence value) { return prop("border-left-width", value); }
+    public static CssProperty border_left_style(CharSequence value) { return prop("border-left-style", value); }
+    public static CssProperty border_left_color(CharSequence value) { return prop("border-left-color", value); }
+
     public static CssProperty border_radius(CharSequence... values) { return prop("border-radius", joinValues(values)); }
+    public static CssProperty border_top_left_radius(CharSequence value) { return prop("border-top-left-radius", value); }
+    public static CssProperty border_top_right_radius(CharSequence value) { return prop("border-top-right-radius", value); }
+    public static CssProperty border_bottom_left_radius(CharSequence value) { return prop("border-bottom-left-radius", value); }
+    public static CssProperty border_bottom_right_radius(CharSequence value) { return prop("border-bottom-right-radius", value); }
     public static CssProperty border_collapse(BorderCollapse value) { return prop("border-collapse", value); }
     public static CssProperty border_collapse(CharSequence value) { return prop("border-collapse", value); }
 
@@ -109,6 +137,8 @@ public final class P {
 
     public static CssProperty box_sizing(BoxSizing value) { return prop("box-sizing", value); }
     public static CssProperty box_sizing(CharSequence value) { return prop("box-sizing", value); }
+
+    public static CssProperty box_decoration_break(CharSequence value) { return prop("box-decoration-break", value); }
 
     // Box-shadow helpers
     public static CssProperty box_shadow(CharSequence value) { return prop("box-shadow", value); }
@@ -139,6 +169,11 @@ public final class P {
     // --- Layout ---
     public static CssProperty display(Display value) { return prop("display", value); }
     public static CssProperty display(CharSequence value) { return prop("display", value); }
+
+    public static CssProperty visibility(CharSequence value) { return prop("visibility", value); }
+
+    public static CssProperty float_(CharSequence value) { return prop("float", value); }
+    public static CssProperty clear(CharSequence value) { return prop("clear", value); }
 
     public static CssProperty position(Position value) { return prop("position", value); }
     public static CssProperty position(CharSequence value) { return prop("position", value); }
@@ -174,20 +209,36 @@ public final class P {
     public static CssProperty align_items(AlignItems value) { return prop("align-items", value); }
     public static CssProperty align_items(CharSequence value) { return prop("align-items", value); }
 
+    public static CssProperty align_self(CharSequence value) { return prop("align-self", value); }
+    public static CssProperty align_content(CharSequence value) { return prop("align-content", value); }
+
+    public static CssProperty justify_items(CharSequence value) { return prop("justify-items", value); }
+    public static CssProperty justify_self(CharSequence value) { return prop("justify-self", value); }
+
+    // Alignment shorthands
+    public static CssProperty place_items(CharSequence value) { return prop("place-items", value); }
+    public static CssProperty place_content(CharSequence value) { return prop("place-content", value); }
+    public static CssProperty place_self(CharSequence value) { return prop("place-self", value); }
+
     public static CssProperty flex(Flex value) { return prop("flex", value); }
     public static CssProperty flex(CharSequence value) { return prop("flex", value); }
 
     public static CssProperty flex_wrap(FlexWrap value) { return prop("flex-wrap", value); }
     public static CssProperty flex_wrap(CharSequence value) { return prop("flex-wrap", value); }
+    public static CssProperty flex_flow(CharSequence value) { return prop("flex-flow", value); }
     public static CssProperty flex_shrink(CharSequence value) { return prop("flex-shrink", value); }
     public static CssProperty flex_grow(CharSequence value) { return prop("flex-grow", value); }
     public static CssProperty flex_basis(CharSequence value) { return prop("flex-basis", value); }
+    public static CssProperty order(int value) { return prop("order", String.valueOf(value)); }
+    public static CssProperty order(CharSequence value) { return prop("order", value); }
 
     public static CssProperty gap(CharSequence value) { return prop("gap", value); }
 
     // --- Grid ---
+    public static CssProperty grid(CharSequence value) { return prop("grid", value); }
     public static CssProperty grid_template_columns(CharSequence value) { return prop("grid-template-columns", value); }
     public static CssProperty grid_template_rows(CharSequence value) { return prop("grid-template-rows", value); }
+    public static CssProperty grid_template(CharSequence value) { return prop("grid-template", value); }
     public static CssProperty grid_column(CharSequence value) { return prop("grid-column", value); }
     public static CssProperty grid_row(CharSequence value) { return prop("grid-row", value); }
 
@@ -226,14 +277,27 @@ public final class P {
 
     // --- Transforms & Filters ---
     public static CssProperty transform(CharSequence value) { return prop("transform", value); }
+
+    // Individual transform properties (modern CSS)
+    public static CssProperty rotate(CharSequence value) { return prop("rotate", value); }
+    public static CssProperty scale(CharSequence value) { return prop("scale", value); }
+    public static CssProperty translate(CharSequence value) { return prop("translate", value); }
+
     public static CssProperty filter(CharSequence value) { return prop("filter", value); }
 
     // --- Pseudo-element content ---
     public static CssProperty content(CharSequence value) { return prop("content", value); }
 
+    // --- CSS Counters ---
+    public static CssProperty counter_reset(CharSequence value) { return prop("counter-reset", value); }
+    public static CssProperty counter_increment(CharSequence value) { return prop("counter-increment", value); }
+
     // --- Opacity ---
     public static CssProperty opacity(Number value) { return prop("opacity", value.toString()); }
     public static CssProperty opacity(CharSequence value) { return prop("opacity", value); }
+
+    // --- All (resets all properties) ---
+    public static CssProperty all(CharSequence value) { return prop("all", value); }
 
     // --- Transitions & Animation ---
     public static CssProperty transition(CharSequence value) { return prop("transition", value); }
@@ -340,12 +404,24 @@ public final class P {
     public static CssProperty animation_iteration_count(CharSequence value) { return prop("animation-iteration-count", value); }
     public static CssProperty animation_direction(CharSequence value) { return prop("animation-direction", value); }
     public static CssProperty animation_fill_mode(CharSequence value) { return prop("animation-fill-mode", value); }
+    public static CssProperty animation_play_state(CharSequence value) { return prop("animation-play-state", value); }
 
     // --- Backdrop Filter ---
     public static CssProperty backdrop_filter(CharSequence value) { return prop("backdrop-filter", value); }
 
     // --- Clip Path ---
     public static CssProperty clip_path(CharSequence value) { return prop("clip-path", value); }
+
+    // --- Mask Properties ---
+    public static CssProperty mask(CharSequence value) { return prop("mask", value); }
+    public static CssProperty mask_image(CharSequence value) { return prop("mask-image", value); }
+    public static CssProperty mask_mode(CharSequence value) { return prop("mask-mode", value); }
+    public static CssProperty mask_repeat(CharSequence value) { return prop("mask-repeat", value); }
+    public static CssProperty mask_position(CharSequence value) { return prop("mask-position", value); }
+    public static CssProperty mask_clip(CharSequence value) { return prop("mask-clip", value); }
+    public static CssProperty mask_origin(CharSequence value) { return prop("mask-origin", value); }
+    public static CssProperty mask_size(CharSequence value) { return prop("mask-size", value); }
+    public static CssProperty mask_composite(CharSequence value) { return prop("mask-composite", value); }
 
     // --- Scroll Properties ---
     public static CssProperty scroll_behavior(CharSequence value) { return prop("scroll-behavior", value); }
@@ -357,19 +433,36 @@ public final class P {
     public static CssProperty scroll_margin_right(CharSequence value) { return prop("scroll-margin-right", value); }
     public static CssProperty scroll_margin_bottom(CharSequence value) { return prop("scroll-margin-bottom", value); }
     public static CssProperty scroll_margin_left(CharSequence value) { return prop("scroll-margin-left", value); }
+    public static CssProperty scroll_margin_block(CharSequence... values) { return prop("scroll-margin-block", joinSpace(values)); }
+    public static CssProperty scroll_margin_block_start(CharSequence value) { return prop("scroll-margin-block-start", value); }
+    public static CssProperty scroll_margin_block_end(CharSequence value) { return prop("scroll-margin-block-end", value); }
+    public static CssProperty scroll_margin_inline(CharSequence... values) { return prop("scroll-margin-inline", joinSpace(values)); }
+    public static CssProperty scroll_margin_inline_start(CharSequence value) { return prop("scroll-margin-inline-start", value); }
+    public static CssProperty scroll_margin_inline_end(CharSequence value) { return prop("scroll-margin-inline-end", value); }
     public static CssProperty scroll_padding(CharSequence... values) { return prop("scroll-padding", joinSpace(values)); }
     public static CssProperty scroll_padding_top(CharSequence value) { return prop("scroll-padding-top", value); }
     public static CssProperty scroll_padding_right(CharSequence value) { return prop("scroll-padding-right", value); }
     public static CssProperty scroll_padding_bottom(CharSequence value) { return prop("scroll-padding-bottom", value); }
     public static CssProperty scroll_padding_left(CharSequence value) { return prop("scroll-padding-left", value); }
+    public static CssProperty scroll_padding_block(CharSequence... values) { return prop("scroll-padding-block", joinSpace(values)); }
+    public static CssProperty scroll_padding_block_start(CharSequence value) { return prop("scroll-padding-block-start", value); }
+    public static CssProperty scroll_padding_block_end(CharSequence value) { return prop("scroll-padding-block-end", value); }
+    public static CssProperty scroll_padding_inline(CharSequence... values) { return prop("scroll-padding-inline", joinSpace(values)); }
+    public static CssProperty scroll_padding_inline_start(CharSequence value) { return prop("scroll-padding-inline-start", value); }
+    public static CssProperty scroll_padding_inline_end(CharSequence value) { return prop("scroll-padding-inline-end", value); }
     public static CssProperty overscroll_behavior(CharSequence value) { return prop("overscroll-behavior", value); }
     public static CssProperty overscroll_behavior_x(CharSequence value) { return prop("overscroll-behavior-x", value); }
     public static CssProperty overscroll_behavior_y(CharSequence value) { return prop("overscroll-behavior-y", value); }
+    public static CssProperty overscroll_behavior_block(CharSequence value) { return prop("overscroll-behavior-block", value); }
+    public static CssProperty overscroll_behavior_inline(CharSequence value) { return prop("overscroll-behavior-inline", value); }
 
     // --- Performance Hints ---
     public static CssProperty will_change(CharSequence... properties) { return prop("will-change", joinComma(properties)); }
     public static CssProperty contain(CharSequence value) { return prop("contain", value); }
     public static CssProperty content_visibility(CharSequence value) { return prop("content-visibility", value); }
+    public static CssProperty contain_intrinsic_size(CharSequence value) { return prop("contain-intrinsic-size", value); }
+    public static CssProperty contain_intrinsic_width(CharSequence value) { return prop("contain-intrinsic-width", value); }
+    public static CssProperty contain_intrinsic_height(CharSequence value) { return prop("contain-intrinsic-height", value); }
 
     // --- Interaction Properties ---
     public static CssProperty user_select(CharSequence value) { return prop("user-select", value); }
@@ -447,6 +540,7 @@ public final class P {
     public static CssProperty max_block_size(CharSequence value) { return prop("max-block-size", value); }
 
     // --- Tier 2: Text Decoration Properties ---
+    public static CssProperty text_decoration_line(CharSequence value) { return prop("text-decoration-line", value); }
     public static CssProperty text_decoration_color(CharSequence value) { return prop("text-decoration-color", value); }
     public static CssProperty text_decoration_style(CharSequence value) { return prop("text-decoration-style", value); }
     public static CssProperty text_decoration_thickness(CharSequence value) { return prop("text-decoration-thickness", value); }
@@ -466,6 +560,191 @@ public final class P {
 
     // --- Tier 3: Text Wrap ---
     public static CssProperty text_wrap(CharSequence value) { return prop("text-wrap", value); }
+
+    // =============================================================================
+    // MISSING STANDARD PROPERTIES (Added after audit)
+    // =============================================================================
+
+    // --- ⭐⭐⭐ CRITICAL: Text Overflow & Word Breaking ---
+    public static CssProperty text_overflow(CharSequence value) { return prop("text-overflow", value); }
+    public static CssProperty word_break(CharSequence value) { return prop("word-break", value); }
+    public static CssProperty overflow_wrap(CharSequence value) { return prop("overflow-wrap", value); }
+    public static CssProperty word_wrap(CharSequence value) { return prop("word-wrap", value); } // Alias for overflow-wrap
+    public static CssProperty line_break(CharSequence value) { return prop("line-break", value); }
+
+    // --- ⭐⭐⭐ CRITICAL: Object Position (goes with object-fit) ---
+    public static CssProperty object_position(CharSequence value) { return prop("object-position", value); }
+
+    // --- ⭐⭐⭐ CRITICAL: Form Styling ---
+    public static CssProperty appearance(CharSequence value) { return prop("appearance", value); }
+
+    // --- ⭐⭐⭐ CRITICAL: Webkit Multi-line Ellipsis (vendor-prefixed but essential) ---
+    public static CssProperty webkit_line_clamp(CharSequence lines) { return prop("-webkit-line-clamp", lines); }
+    public static CssProperty webkit_box_orient(CharSequence orientation) { return prop("-webkit-box-orient", orientation); }
+
+    // --- ⭐⭐ HIGH: Typography & Text ---
+    public static CssProperty text_transform(CharSequence value) { return prop("text-transform", value); }
+    public static CssProperty vertical_align(CharSequence value) { return prop("vertical-align", value); }
+    public static CssProperty letter_spacing(CharSequence value) { return prop("letter-spacing", value); }
+    public static CssProperty word_spacing(CharSequence value) { return prop("word-spacing", value); }
+    public static CssProperty text_indent(CharSequence value) { return prop("text-indent", value); }
+    public static CssProperty text_align_last(CharSequence value) { return prop("text-align-last", value); }
+    public static CssProperty text_shadow(CharSequence value) { return prop("text-shadow", value); }
+    public static CssProperty hyphens(CharSequence value) { return prop("hyphens", value); }
+    public static CssProperty text_rendering(CharSequence value) { return prop("text-rendering", value); }
+
+    // --- ⭐⭐ HIGH: UI & Forms ---
+    public static CssProperty caret_color(CharSequence value) { return prop("caret-color", value); }
+    public static CssProperty accent_color(CharSequence value) { return prop("accent-color", value); }
+
+    // --- ⭐⭐ HIGH: Lists ---
+    public static CssProperty list_style_type(CharSequence value) { return prop("list-style-type", value); }
+    public static CssProperty list_style_position(CharSequence value) { return prop("list-style-position", value); }
+    public static CssProperty list_style_image(CharSequence value) { return prop("list-style-image", value); }
+    public static CssProperty list_style(CharSequence value) { return prop("list-style", value); }
+
+    // --- ⭐⭐ HIGH: Outline (complete the set) ---
+    public static CssProperty outline_style(CharSequence value) { return prop("outline-style", value); }
+    public static CssProperty outline_color(CharSequence value) { return prop("outline-color", value); }
+    public static CssProperty outline_width(CharSequence value) { return prop("outline-width", value); }
+
+    // --- ⭐⭐ HIGH: Multi-column Layout ---
+    public static CssProperty columns(CharSequence value) { return prop("columns", value); }
+    public static CssProperty column_count(CharSequence value) { return prop("column-count", value); }
+    public static CssProperty column_width(CharSequence value) { return prop("column-width", value); }
+    public static CssProperty column_gap(CharSequence value) { return prop("column-gap", value); }
+    public static CssProperty row_gap(CharSequence value) { return prop("row-gap", value); }
+    public static CssProperty column_rule(CharSequence value) { return prop("column-rule", value); }
+    public static CssProperty column_rule_color(CharSequence value) { return prop("column-rule-color", value); }
+    public static CssProperty column_rule_style(CharSequence value) { return prop("column-rule-style", value); }
+    public static CssProperty column_rule_width(CharSequence value) { return prop("column-rule-width", value); }
+    public static CssProperty column_span(CharSequence value) { return prop("column-span", value); }
+    public static CssProperty column_fill(CharSequence value) { return prop("column-fill", value); }
+
+    // --- ⭐⭐ HIGH: Scrollbars (Firefox) ---
+    public static CssProperty scrollbar_width(CharSequence value) { return prop("scrollbar-width", value); }
+    public static CssProperty scrollbar_color(CharSequence value) { return prop("scrollbar-color", value); }
+
+    // --- ⭐ MEDIUM: Background Properties ---
+    public static CssProperty background_position(CharSequence value) { return prop("background-position", value); }
+    public static CssProperty background_size(CharSequence value) { return prop("background-size", value); }
+    public static CssProperty background_repeat(CharSequence value) { return prop("background-repeat", value); }
+    public static CssProperty background_attachment(CharSequence value) { return prop("background-attachment", value); }
+    public static CssProperty background_origin(CharSequence value) { return prop("background-origin", value); }
+    public static CssProperty background_clip(CharSequence value) { return prop("background-clip", value); }
+
+    // --- ⭐ MEDIUM: Transform Properties ---
+    public static CssProperty transform_origin(CharSequence value) { return prop("transform-origin", value); }
+    public static CssProperty transform_style(CharSequence value) { return prop("transform-style", value); }
+    public static CssProperty perspective(CharSequence value) { return prop("perspective", value); }
+    public static CssProperty perspective_origin(CharSequence value) { return prop("perspective-origin", value); }
+    public static CssProperty backface_visibility(CharSequence value) { return prop("backface-visibility", value); }
+
+    // --- ⭐ MEDIUM: Grid Properties (extended) ---
+    public static CssProperty grid_column_start(CharSequence value) { return prop("grid-column-start", value); }
+    public static CssProperty grid_column_end(CharSequence value) { return prop("grid-column-end", value); }
+    public static CssProperty grid_row_start(CharSequence value) { return prop("grid-row-start", value); }
+    public static CssProperty grid_row_end(CharSequence value) { return prop("grid-row-end", value); }
+    public static CssProperty grid_auto_rows(CharSequence value) { return prop("grid-auto-rows", value); }
+    public static CssProperty grid_auto_columns(CharSequence value) { return prop("grid-auto-columns", value); }
+    public static CssProperty grid_auto_flow(CharSequence value) { return prop("grid-auto-flow", value); }
+
+    // --- ⭐ MEDIUM: Tables ---
+    public static CssProperty border_spacing(CharSequence value) { return prop("border-spacing", value); }
+    public static CssProperty caption_side(CharSequence value) { return prop("caption-side", value); }
+    public static CssProperty empty_cells(CharSequence value) { return prop("empty-cells", value); }
+    public static CssProperty table_layout(CharSequence value) { return prop("table-layout", value); }
+
+    // --- ⭐ MEDIUM: Effects & Blend Modes ---
+    public static CssProperty mix_blend_mode(CharSequence value) { return prop("mix-blend-mode", value); }
+    public static CssProperty isolation(CharSequence value) { return prop("isolation", value); }
+
+    // --- ⭐ MEDIUM: Typography Control (Print) ---
+    public static CssProperty orphans(CharSequence value) { return prop("orphans", value); }
+    public static CssProperty widows(CharSequence value) { return prop("widows", value); }
+
+    // --- ⭐ MEDIUM: Text & Writing ---
+    public static CssProperty direction(CharSequence value) { return prop("direction", value); }
+    public static CssProperty writing_mode(CharSequence value) { return prop("writing-mode", value); }
+    public static CssProperty unicode_bidi(CharSequence value) { return prop("unicode-bidi", value); }
+    public static CssProperty tab_size(CharSequence value) { return prop("tab-size", value); }
+    public static CssProperty quotes(CharSequence value) { return prop("quotes", value); }
+
+    // --- ⭐ MEDIUM: Page Breaks (Print) ---
+    public static CssProperty page_break_before(CharSequence value) { return prop("page-break-before", value); }
+    public static CssProperty page_break_after(CharSequence value) { return prop("page-break-after", value); }
+    public static CssProperty page_break_inside(CharSequence value) { return prop("page-break-inside", value); }
+    public static CssProperty break_before(CharSequence value) { return prop("break-before", value); }
+    public static CssProperty break_after(CharSequence value) { return prop("break-after", value); }
+    public static CssProperty break_inside(CharSequence value) { return prop("break-inside", value); }
+
+    // --- ⭐ MEDIUM: Rendering ---
+    public static CssProperty image_rendering(CharSequence value) { return prop("image-rendering", value); }
+
+    // --- LOWER: Border Image (complete set for rare use) ---
+    public static CssProperty border_image(CharSequence value) { return prop("border-image", value); }
+    public static CssProperty border_image_source(CharSequence value) { return prop("border-image-source", value); }
+    public static CssProperty border_image_slice(CharSequence value) { return prop("border-image-slice", value); }
+    public static CssProperty border_image_width(CharSequence value) { return prop("border-image-width", value); }
+    public static CssProperty border_image_outset(CharSequence value) { return prop("border-image-outset", value); }
+    public static CssProperty border_image_repeat(CharSequence value) { return prop("border-image-repeat", value); }
+
+    // --- LOWER: Background Blend ---
+    public static CssProperty background_blend_mode(CharSequence value) { return prop("background-blend-mode", value); }
+
+    // --- SVG Properties (common with inline SVG) ---
+    public static CssProperty fill(CharSequence value) { return prop("fill", value); }
+    public static CssProperty stroke(CharSequence value) { return prop("stroke", value); }
+    public static CssProperty stroke_width(CharSequence value) { return prop("stroke-width", value); }
+    public static CssProperty stroke_dasharray(CharSequence value) { return prop("stroke-dasharray", value); }
+    public static CssProperty stroke_dashoffset(CharSequence value) { return prop("stroke-dashoffset", value); }
+    public static CssProperty stroke_linecap(CharSequence value) { return prop("stroke-linecap", value); }
+    public static CssProperty stroke_linejoin(CharSequence value) { return prop("stroke-linejoin", value); }
+    public static CssProperty stroke_miterlimit(CharSequence value) { return prop("stroke-miterlimit", value); }
+    public static CssProperty stroke_opacity(CharSequence value) { return prop("stroke-opacity", value); }
+    public static CssProperty fill_opacity(CharSequence value) { return prop("fill-opacity", value); }
+    public static CssProperty fill_rule(CharSequence value) { return prop("fill-rule", value); }
+    public static CssProperty paint_order(CharSequence value) { return prop("paint-order", value); }
+    public static CssProperty vector_effect(CharSequence value) { return prop("vector-effect", value); }
+    public static CssProperty marker(CharSequence value) { return prop("marker", value); }
+    public static CssProperty marker_start(CharSequence value) { return prop("marker-start", value); }
+    public static CssProperty marker_mid(CharSequence value) { return prop("marker-mid", value); }
+    public static CssProperty marker_end(CharSequence value) { return prop("marker-end", value); }
+
+    // --- CSS Shapes (modern) ---
+    public static CssProperty shape_outside(CharSequence value) { return prop("shape-outside", value); }
+    public static CssProperty shape_margin(CharSequence value) { return prop("shape-margin", value); }
+    public static CssProperty shape_image_threshold(CharSequence value) { return prop("shape-image-threshold", value); }
+
+    // --- Legacy Clipping ---
+    public static CssProperty clip(CharSequence value) { return prop("clip", value); }
+
+    // --- Mobile/Text Properties ---
+    public static CssProperty text_size_adjust(CharSequence value) { return prop("text-size-adjust", value); }
+    public static CssProperty webkit_tap_highlight_color(CharSequence value) { return prop("-webkit-tap-highlight-color", value); }
+
+    // --- Color Scheme (Dark Mode) ---
+    public static CssProperty color_scheme(CharSequence value) { return prop("color-scheme", value); }
+
+    // --- Accessibility & Print ---
+    public static CssProperty forced_color_adjust(CharSequence value) { return prop("forced-color-adjust", value); }
+    public static CssProperty print_color_adjust(CharSequence value) { return prop("print-color-adjust", value); }
+
+    // --- Advanced Typography ---
+    public static CssProperty hanging_punctuation(CharSequence value) { return prop("hanging-punctuation", value); }
+    public static CssProperty initial_letter(CharSequence value) { return prop("initial-letter", value); }
+
+    // --- Text Emphasis (East Asian typography) ---
+    public static CssProperty text_emphasis(CharSequence value) { return prop("text-emphasis", value); }
+    public static CssProperty text_emphasis_style(CharSequence value) { return prop("text-emphasis-style", value); }
+    public static CssProperty text_emphasis_color(CharSequence value) { return prop("text-emphasis-color", value); }
+
+    // --- @page Properties (Print) ---
+    public static CssProperty size(CharSequence value) { return prop("size", value); }
+    public static CssProperty marks(CharSequence value) { return prop("marks", value); }
+    public static CssProperty bleed(CharSequence value) { return prop("bleed", value); }
+
+    // =============================================================================
 
     // --- Custom ---
     /**

@@ -67,6 +67,8 @@ public non-sealed class Supports implements CssRuleFrag {
                     "@layer cannot be nested inside @supports");
                 case Layer.LayerOrder ignored -> throw new IllegalArgumentException(
                     "@layer ordering cannot be nested inside @supports");
+                case Page ignored -> throw new IllegalArgumentException(
+                    "@page cannot be nested inside @supports");
                 case CssComment ignored -> {} // comments not preserved
                 case CssEmptyLine ignored -> {} // empty lines not preserved
             }
@@ -88,6 +90,11 @@ public non-sealed class Supports implements CssRuleFrag {
 
         sb.append("}");
         return sb.toString();
+    }
+
+    @Override
+    public String toString() {
+        return delegatedCharSeqVal();
     }
 
     /**

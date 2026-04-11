@@ -140,6 +140,14 @@ public final class CssRules implements CssRuleFrag {
                     sb.append(frag.delegatedCharSeqVal());
                     firstItem = false;
                 }
+                case Page ignored -> {
+                    // @page rules with double newline separation
+                    if (!firstItem) {
+                        sb.append("\n\n");
+                    }
+                    sb.append(frag.delegatedCharSeqVal());
+                    firstItem = false;
+                }
                 case CssRules ignored -> {
                     // Nested CssRules (from rulesFrom)
                     if (!firstItem) {
@@ -264,6 +272,7 @@ public final class CssRules implements CssRuleFrag {
                     case ContainerQuery cq -> Stream.of(cq);
                     case Layer layer -> Stream.of(layer);
                     case Layer.LayerOrder lo -> Stream.of(lo);
+                    case Page page -> Stream.of(page);
                     case CssComment comment -> Stream.of(comment);
                     case CssEmptyLine emptyLine -> Stream.of(emptyLine);
                 }

@@ -1,418 +1,103 @@
 # LuvS Tutorial
 
-A concise guide to LuvS - a type-safe Java CSS generation library. LuvS lets you write CSS rules in Java with compile-time checking, IDE navigation (ctrl+click, find-all-references, rename-symbol), and full composability.
+Type-safe Java CSS generation with compile-time checking, IDE navigation (ctrl+click, find-all-references, rename-symbol), and full composability.
 
-## Maven Coordinates
+**Maven:** `io.github.luvml:luvs:2.0` • **GitHub:** https://github.com/luvml/luvml • **Related:** [luvml](../luvml/luvml_tutorial.md) for type-safe HTML
 
-```xml
-<dependency>
-    <groupId>io.github.luvml</groupId>
-    <artifactId>luvs</artifactId>
-    <version>2.0</version>
-</dependency>
-```
+## Comprehensive CSS Coverage
 
-GitHub repo: https://github.com/luvml/luvml
+**394 CSS properties** - All standard properties, modern features (2020-2024), logical properties (inline/block), SVG (20+ properties), masking (9 properties), print (@page support), vendor-specific extensions.
 
-**Related Projects**:
-- **[luvml](../luvml/luvml_tutorial.md)** - Type-safe HTML generation. LuvS generates `<style>` blocks that plug directly into luvml pages.
+**Modern at-rules** - @font-face, @supports, @container, @layer, @page, @media with full nesting support, logical operators (and/or/not), feature queries.
+
+**Complete feature set** - Transforms (chainable), filters (chainable), gradients (linear/radial with stops), calc expressions (arithmetic), color functions (rgb/rgba/hsl/hsla/color-mix/relative color syntax), transitions, animations, keyframes, CSS variables, media queries (breakpoints, dark mode, reduced motion), container queries, cascade layers, pseudo-classes (hover/focus/disabled/checked/nth-child/...), pseudo-elements (before/after/placeholder/first-line/...), attribute selectors (existence/value/substring matching), combinators (child/descendant/adjacent/sibling/compound/grouping).
+
+**Verified against** - W3Schools (332+ core properties ✓), CSS-Tricks top properties ✓, MDN comprehensive lists ✓.
 
 ## Core Concepts
 
-LuvS has four main entry points, each a static utility class:
+Four main entry points: **P** (properties like `color()`, `margin()`), **V** (values like `px(10)`, `rem(1.5)`, enum constants `FLEX`, `BOLD`), **S** (selector combinators), **Selector** (fluent builder). Supporting types: `CssClass`, `HtmlTag`, `CssRule`, `CssRules`, `CssVariable`, `Keyframes`, `MQ`, `FontFace`, `Supports`, `ContainerQuery`, `Layer`.
 
-| Class | Role | Example |
-|-------|------|---------|
-| `P`   | CSS **P**roperties | `color(RED)`, `margin(px(10))` |
-| `V`   | CSS **V**alues     | `px(10)`, `rem(1.5)`, `FLEX`, `BOLD` |
-| `S`   | CSS **S**electors (static helpers) | `descendant(...)`, `grouping(...)` |
-| `Selector` | Fluent selector builder | `selector(container, ">", div)` |
-
-Plus supporting types: `CssClass`, `HtmlTag`, `CssRule`, `CssRules`, `CssVariable`, `Keyframes`, `MQ`.
-
-### Static Imports
-
+**Static imports** (use what you need):
 ```java
-import static luvs.P.*;           // Properties: color(), margin(), display(), etc.
-import static luvs.V.*;           // Values: px(), rem(), FLEX, BOLD, RED, etc.
-import static luvs.S.*;           // Selector combinators: descendant(), grouping(), etc.
-import static luvs.Selector.selector;  // Fluent selector builder
-import static luvs.HtmlTag.*;     // HTML tag selectors: div, span, input, etc.
-import static luvs.CssRule.rule;  // Explicit rule creation
-import static luvs.CssRules.*;    // rules(), rulesFrom(), forEachRule(), etc.
-import static luvs.CssProp.*;     // Property name constants: TRANSFORM, ALL, etc.
-import static luvs.MQ.*;          // Media queries: media(), minWidth(), prefersColorScheme(), etc.
-import static luvs.FontFace.*;    // Font faces: fontFace(), fontFamily(), src(), etc.
-import static luvs.Supports.*;    // Feature queries: supports(), property(), etc.
-import static luvs.ContainerQuery.*;  // Container queries: container(), minWidth(), etc.
-import static luvs.Layer.*;       // Cascade layers: layer(), layerOrder()
-import static luvs.CssComment.*;  // CSS comments: comment(), commentBlock()
-import static luvs.CssEmptyLine.emptyLine;  // Empty lines for visual separation
+import static luvs.P.*;            // Properties
+import static luvs.V.*;            // Values & constants
+import static luvs.HtmlTag.*;      // HTML tag selectors (div, span, input, ...)
+import static luvs.CssRules.*;     // rules(), rulesFrom(), forEachRule()
+import static luvs.CssProp.*;      // Property name constants (TRANSFORM, ALL, ...)
+import static luvs.MQ.*;           // Media queries
+import static luvs.FontFace.*;     // @font-face
+import static luvs.Supports.*;     // @supports
+import static luvs.ContainerQuery.*;  // @container
+import static luvs.Layer.*;        // @layer
 ```
 
 ## Properties (`P`)
 
-Properties mirror CSS property names in `snake_case`. Each returns a `CssProperty` (an immutable name-value pair).
+Properties mirror CSS names in `snake_case`, returning `CssProperty` (immutable name-value pair). **394 properties** covering standard CSS, modern features, logical properties, SVG, masking, print, and vendor-specific.
 
 ```java
-// Font & text
-color(RED)                          // color: red;
-font_size(px(16))                   // font-size: 16px;
-font_weight(BOLD)                   // font-weight: bold;
-text_align(CENTER)                  // text-align: center;
-line_height(1.6)                    // line-height: 1.6;
-font_family("Arial", "sans-serif")  // font-family: Arial, sans-serif;
-
-// Box model
-margin(px(20), AUTO)                // margin: 20px auto;
-padding(rem(1), rem(2))             // padding: 1rem 2rem;
-border(px(1), SOLID, "#ccc")        // border: 1px solid #ccc;
-border_radius(px(8))                // border-radius: 8px;
-
-// Layout
-display(FLEX)                       // display: flex;
-position(ABSOLUTE)                  // position: absolute;
-width(percent(100))                 // width: 100%;
-z_index(10)                         // z-index: 10;
-
-// Flexbox
-flex_direction(COLUMN)              // flex-direction: column;
-justify_content(SPACE_BETWEEN)      // justify-content: space-between;
-align_items(AI_CENTER)              // align-items: center;
-gap(rem(1))                         // gap: 1rem;
-
-// Grid
+// Core examples (typography, box model, layout, flexbox, grid)
+color(RED), font_size(px(16)), font_weight(BOLD), text_align(CENTER), line_height(1.6)
+margin(px(20), AUTO), padding(rem(1), rem(2)), border(px(1), SOLID, "#ccc"), border_radius(px(8))
+display(FLEX), position(ABSOLUTE), width(percent(100)), z_index(10)
+flex_direction(COLUMN), justify_content(SPACE_BETWEEN), align_items(AI_CENTER), gap(rem(1))
 grid_template_columns(grid_repeat(AUTO_FIT, grid_minmax(px(200), fr(1))))
-// grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+
+// Alignment (flexbox/grid): align_self, align_content, justify_items, justify_self, place_*
+// Shorthands: font(), grid_template(), flex_flow(), list_style(), border_width(), border_style()
+// Modern: aspect_ratio(), backdrop_filter(), clip_path(), scroll_*, overscroll_*, will_change(), contain()
+// Logical: margin_inline*, padding_block*, border_inline*, inset_*, inline_size, block_size
+// Transforms: rotate(), scale(), translate() (individual), transform() (combined)
+// SVG: fill(), stroke(), stroke_width(), stroke_dasharray(), paint_order(), mask*
+// Print: size(), marks(), bleed() (for @page)
+// Misc: visibility(), float_(), clear(), order(), animation_play_state(), counter_*, all()
 ```
 
-### The `important()` helper
-
-```java
-background_color(important(PRIMARY))  // background-color: #667eea !important;
-```
-
-### The `prop()` escape hatch
-
-For any CSS property not covered by a dedicated method:
-
-```java
-prop("appearance", "none")     // appearance: none;
-prop("scroll-behavior", "smooth")
-```
+**Helpers:** `important(value)` → `value !important`, `prop(name, value)` → escape hatch for any property not covered.
 
 ## Values (`V`)
 
-### Units
+**Units:** `px()`, `rem()`, `em()`, `percent()`, `vh()`, `vw()`, `vmin()`, `vmax()`, `fr()` (grid), `s()`, `ms()` (time), `deg()` (angle), `cm()`, `mm()`, `in()`, `pt()`, `pc()` (print)
+**Keywords:** `AUTO`, `ZERO`, `INHERIT`, `INITIAL`, `UNSET`, `REVERT`
+**Enum constants** (via `import static luvs.V.*`): colors (`RED`, `BLUE`, `WHITE`, `TRANSPARENT`, ...), display (`FLEX`, `GRID`, `BLOCK`, `NONE`, ...), position (`ABSOLUTE`, `RELATIVE`, `FIXED`, `STICKY`), font-weight (`BOLD`, `NORMAL`, `W100`-`W900`), text-align, cursor, flex/grid alignment, overflow, etc. Prefixed to avoid conflicts: `JC_CENTER` (JustifyContent), `AI_CENTER` (AlignItems), `BC_COLLAPSE`, `TD_NONE`, `OF_COVER`, `RS_BOTH`.
 
-```java
-px(16)        // 16px
-rem(1.5)      // 1.5rem
-em(2)         // 2em
-percent(80)   // 80%
-vh(100)       // 100vh
-vw(50)        // 50vw
-fr(1)         // 1fr  (CSS grid)
-s(0.3)        // 0.3s (time)
-ms(200)       // 200ms
-deg(45)       // 45deg (angle)
-```
-
-### Keywords
-
-```java
-AUTO      // "auto"
-ZERO      // "0"
-INHERIT   // "inherit"
-INITIAL   // "initial"
-```
-
-### Type-Safe Enum Constants
-
-`V` re-exports commonly used enum constants so a single `import static luvs.V.*` gives you:
-
-```java
-// Colors:     RED, BLUE, WHITE, BLACK, GRAY, TRANSPARENT, ...
-// Display:    FLEX, GRID, BLOCK, INLINE, NONE, ...
-// Position:   ABSOLUTE, RELATIVE, FIXED, STICKY, STATIC
-// FontWeight: BOLD, NORMAL, W100..W900
-// TextAlign:  LEFT, RIGHT, CENTER, JUSTIFY
-// Cursor:     POINTER, MOVE, GRAB, NOT_ALLOWED, ...
-// And more:   FlexDirection, JustifyContent, AlignItems, Overflow, etc.
-```
-
-Some enum values have prefixed names to avoid conflicts between different enums that share the same word:
-
-```java
-JC_CENTER     // JustifyContent.CENTER (prefix JC_ to avoid clash with TextAlign.CENTER)
-AI_CENTER     // AlignItems.CENTER
-AI_FLEX_START // AlignItems.FLEX_START
-BC_COLLAPSE   // BorderCollapse.COLLAPSE
-TD_NONE       // TextDecoration.NONE (vs Display.NONE)
-OF_COVER      // ObjectFit.COVER
-RS_BOTH       // Resize.BOTH
-```
-
-### Calc Expressions
-
-`CssUnit` values returned by `px()`, `rem()`, `percent()`, etc. support arithmetic that generates CSS `calc()`:
-
-```java
-width(percent(100).minus(px(40)))     // width: calc(100% - 40px);
-height(vh(100).minus(rem(4)))         // height: calc(100vh - 4rem);
-```
-
-### Math Functions
-
-```java
-min(percent(100), px(500))            // min(100%, 500px)
-max(vh(50), px(300))                  // max(50vh, 300px)
-clamp(px(300), percent(50), px(600))  // clamp(300px, 50%, 600px)
-```
-
-### Color Functions
-
-```java
-rgb(255, 0, 0)                             // rgb(255, 0, 0)
-rgba(0, 0, 0, 0.5)                         // rgba(0, 0, 0, 0.5)
-hsl(120, percent(100), percent(50))        // hsl(120, 100%, 50%)
-hsla(120, percent(100), percent(50), 0.8)  // hsla(120, 100%, 50%, 0.8)
-```
-
-### Gradients
-
-```java
-linearGradient(RED, BLUE)                         // linear-gradient(red, blue)
-linearGradientWithAngle(deg(135), RED, BLUE)      // linear-gradient(135deg, red, blue)
-radialGradient(WHITE, LIGHT_BLUE, BLUE)           // radial-gradient(white, lightblue, blue)
-
-// Gradient color stops
-linearGradientWithAngle(deg(135), stop(PRIMARY, 0), stop(SECONDARY, 100))
-// linear-gradient(135deg, #667eea 0%, #764ba2 100%)
-```
-
-### Transforms (Chainable)
-
-```java
-transform(scale(1.05))                                  // transform: scale(1.05);
-transform(scale(1.05).rotate(deg(2)).translateY(px(-2))) // transform: scale(1.05) rotate(2deg) translateY(-2px);
-```
-
-Available: `scale`, `rotate`, `translate`, `translateX/Y/Z`, `skew`, `skewX/Y`, `rotateX/Y/Z`.
-
-### Filters (Chainable)
-
-```java
-filter(blur(px(5)).brightness(1.2).contrast(0.9))
-// filter: blur(5px) brightness(1.2) contrast(0.9);
-```
-
-Available: `blur`, `brightness`, `contrast`, `grayscale`, `hueRotate`, `invert`, `opacity`, `saturate`, `sepia`, `dropShadow`.
-
-### Transitions
-
-```java
-// Single property
-transition(BACKGROUND, s(0.3))                       // transition: background 0.3s;
-
-// Single property with timing function
-transition(BACKGROUND, s(0.3), EASE_IN_OUT)          // transition: background 0.3s ease-in-out;
-
-// Multiple properties (property-duration pairs)
-transition(TRANSFORM, s(0.2), BOX_SHADOW, s(0.2))   // transition: transform 0.2s, box-shadow 0.2s;
-```
-
-Property name constants are in `CssProp`: `BACKGROUND`, `TRANSFORM`, `BOX_SHADOW`, `ALL`, `COLOR`, `OPACITY`, etc.
-
-Timing function constants: `EASE`, `LINEAR`, `EASE_IN`, `EASE_OUT`, `EASE_IN_OUT`, `STEP_START`, `STEP_END`. Also `TimingFunction.cubicBezier(0.4, 0, 0.2, 1)` and `TimingFunction.steps(4)` for custom curves.
+**Calc:** `width(percent(100).minus(px(40)))` → `calc(100% - 40px)`, arithmetic on `CssUnit` values
+**Math:** `min()`, `max()`, `clamp()`
+**Colors:** `rgb()`, `rgba()`, `hsl()`, `hsla()`, `colorMix()` (color-mix in various spaces), `rgbFrom()`, `hslFrom()`, `oklchFrom()` (relative color syntax)
+**Gradients:** `linearGradient()`, `linearGradientWithAngle()`, `radialGradient()`, `stop()` for color stops
+**Transforms:** chainable `scale()`, `rotate()`, `translate()`, `translateX/Y/Z()`, `skew()`, `skewX/Y()`, `rotateX/Y/Z()` → `transform(scale(1.05).rotate(deg(2)))`
+**Filters:** chainable `blur()`, `brightness()`, `contrast()`, `grayscale()`, `hueRotate()`, `invert()`, `saturate()`, `sepia()`, `dropShadow()` → `filter(blur(px(5)).brightness(1.2))`
+**Transitions:** `transition(BACKGROUND, s(0.3), EASE_IN_OUT)` with property name constants from `CssProp` (`TRANSFORM`, `ALL`, `COLOR`, ...) and timing functions (`EASE`, `LINEAR`, `EASE_IN_OUT`, `cubicBezier()`, `steps()`)
 
 ## Selectors
 
-There are multiple ways to build CSS selectors, from simple to complex.
+Build selectors via fluent DSL on `HtmlTag` enum, `CssClass` enum, or `Selector` class. **Best practice:** use the fluent API (not verbose `selector(...)` calls), add CSS comments when learning.
 
-### 📋 Best Practice: Fluent DSL + CSS Comments
-
-**IMPORTANT:** When learning LuvS or working with AI assistants, follow these rules:
-
-1. **Always use the fluent DSL** - don't construct verbose `selector(...)` calls manually
-2. **Add CSS comments next to selectors** - show the expected CSS output for clarity
-
-**✅ GOOD - Fluent DSL with CSS reference:**
 ```java
-// Compound selector
-video_chip.disabled().____(...)              // .video_chip:disabled
-
-// Child combinator
-container.child(div).____(...)               // .container > div
-
-// Descendant with pseudo-class
-nav.descendant(a.hover()).____(...)          // nav a:hover
-
-// Attribute selector
-input.typeCheckbox().____(...)               // input[type="checkbox"]
-
-// Complex chaining
+// Fluent DSL examples (✅ GOOD - readable, type-safe, IDE-friendly)
+video_chip.disabled().____(...)                              // .video_chip:disabled
+container.child(div).____(...)                               // .container > div
+nav.descendant(a.hover()).____(...)                          // nav a:hover
+input.typeCheckbox().____(...)                               // input[type="checkbox"]
 video_chip.child(input.typeCheckbox().checked()).____(...)
 // .video_chip > input[type="checkbox"]:checked
+
+// Avoid verbose selector(...) calls (❌ hard to read, not type-safe)
+// Use fluent DSL for readability, type safety, IDE navigation (find-all-references, rename-symbol)
 ```
 
-**❌ BAD - Verbose selector() calls:**
-```java
-// Don't do this - hard to read, defeats the purpose of the DSL
-selector(video_chip, ">", div).____(...)                    // verbose!
-selector(nav, " ", a, ":hover").____(...)                   // error-prone!
-selector("input[type='checkbox']").____(...)                // not type-safe!
-```
+**HtmlTag enum:** Type-safe tag selectors - `body`, `div`, `span`, `p`, `a`, `h1`-`h6`, `ul`, `ol`, `li`, `table`, `form`, `input`, `button`, `label`, `select`, `textarea`, `section`, `article`, `header`, `footer`, `nav`, `main`, `img`, `code`, `pre`, `details`, `summary`, `video`, `audio`, etc. Special: `$all` (`*`), `$root` (`:root`), `$$backdrop` (`::backdrop`).
 
-**Why this matters:**
-- **Readability** - fluent DSL reads like natural method chaining
-- **Type safety** - catches typos at compile time
-- **AI assistance** - CSS comments help AI understand your intent clearly
-- **Learning** - seeing the CSS output reinforces the mapping
-- **Maintenance** - find-all-references, rename-symbol work correctly
+**CssClass enum:** Define class names as `enum Styles implements CssClass { container, card, btn; }`. Enum name = class name. Rules defined separately (flexibility for SSR/client code sharing). Use in HTML via `div(class_(container, card), ...)` → `<div class="container card">`.
 
-As you gain experience, you can omit the CSS comments, but they're invaluable when starting out or when selectors get complex.
+**Selector class:** Rarely needed - use fluent DSL instead. Only for edge cases: `selector("[dir='rtl']").____(...)`, `selector(":is(h1, h2, h3)").____(...)`. Prefer `$root.____(...)`, `container.child(div).____(...)` over `selector(...)` calls.
 
-### HtmlTag Enum
+**Pseudo-classes** (chainable on `HtmlTag`, `CssClass`, `Selector`): `hover()`, `focus()`, `active()`, `disabled()`, `checked()`, `firstChild()`, `lastChild()`, `nthChild()`, `not()`, `notHover()`, `notDisabled()`, etc.
 
-Type-safe HTML tag names. These are enum constants that work directly as selectors:
+**Pseudo-elements:** `before()`, `after()`, `firstLine()`, `firstLetter()`, `placeholder()`, `selection()`
 
-```java
-import static luvs.HtmlTag.*;
-
-body.____(                  // body { ... }
-    margin(ZERO)
-)
-
-input.focus().____(         // input:focus { ... }
-    border_color("blue")
-)
-
-a.hover().____(             // a:hover { ... }
-    color(RED)
-)
-```
-
-Available tags: `body`, `div`, `span`, `p`, `a`, `h1`-`h6`, `ul`, `ol`, `li`, `table`, `tr`, `td`, `th`, `thead`, `tbody`, `form`, `input`, `button`, `label`, `select`, `textarea`, `section`, `article`, `header`, `footer`, `nav`, `main`, `img`, `code`, `pre`, `details`, `summary`, `video`, `audio`, and more.
-
-Special selectors (prefixed with `$` to distinguish from HTML tags):
-- `$all` maps to the CSS universal selector `*`
-- `$root` maps to the CSS `:root` pseudo-class
-- `$$backdrop` maps to the CSS `::backdrop` pseudo-element
-
-### CssClass Enum
-
-Define your CSS class names as a Java enum implementing `CssClass`:
-
-```java
-public enum Styles implements CssClass {
-    container,
-    card,
-    highlight,
-    btn;
-}
-```
-
-Each enum constant becomes a type-safe CSS class name. The enum name *is* the class name.
-
-```java
-// Creating rules
-container.____(             // .container { ... }
-    width(percent(80)),
-    margin(ZERO, AUTO)
-)
-
-// Using in luvml HTML
-div(class_(container, card), ...)   // <div class="container card">
-
-// Combining with luvml - class_() accepts CssClass enums and strings
-div(class_(container, "legacy-class"), ...)
-```
-
-**Key point**: `CssClass` enums are just names. CSS rules are defined separately. This means you can define class names in one place and rules in another, or co-locate them - your choice. If you are sharing code at server side (SSR) and client side (teavm) you might want to keeo the CssClass enum accessible also to the teavm side, whereas the definition of those css classes you might want to just keep to the server side, this is just an example usecase. 
-
-### Selector (Fluent Builder)
-
-The `Selector` class is rarely needed directly - prefer the fluent methods on `CssClass` and `HtmlTag` shown earlier.
-
-**Use `Selector` only for rare edge cases** like custom selectors not covered by the DSL:
-
-```java
-// String-based selectors (escape hatch for uncommon cases)
-selector("[dir='rtl']").____(...)             // [dir='rtl'] { ... }
-selector(":is(h1, h2, h3)").____(...)         // :is(h1, h2, h3) { ... }
-
-// For normal cases, the fluent DSL is already available:
-$root.____(...)                               // ✅ :root { ... }
-$$backdrop.____(...)                          // ✅ ::backdrop { ... }
-container.child(div).____(...)                // ✅ .container > div - PREFER THIS
-// NOT: selector(container, ">", div).____(...)  ❌ verbose, don't do this
-```
-
-The fluent DSL (`container.child(div)`, `btn.hover()`, `$root`, `$$backdrop`, etc.) is more readable and leverages mixins properly.
-
-### Pseudo-classes (Chainable)
-
-Pseudo-class methods are available on `HtmlTag`, `CssClass`, and `Selector`:
-
-```java
-btn.hover().____(...)                        // .btn:hover { ... }
-btn.focus().____(...)                        // .btn:focus { ... }
-btn.active().____(...)                       // .btn:active { ... }
-btn.disabled().____(...)                     // .btn:disabled { ... }
-input.checked().____(...)                    // input:checked { ... }
-li.firstChild().____(...)                    // li:first-child { ... }
-li.nthChild("2n+1").____(...)               // li:nth-child(2n+1) { ... }
-btn.not(":disabled").____(...)              // .btn:not(:disabled) { ... }
-```
-
-Negated pseudo-classes have dedicated methods too:
-
-```java
-btn.notDisabled().____(...)                  // .btn:not(:disabled) { ... }
-btn.notHover().____(...)                     // .btn:not(:hover) { ... }
-```
-
-### Pseudo-elements
-
-```java
-btn.before().____(content("'>'"), ...)       // .btn::before { content: '>'; ... }
-btn.after().____(content("' \u2192'"), ...)   // .btn::after { content: ' \u2192'; ... }
-p.firstLine().____(font_weight(BOLD))        // p::first-line { font-weight: bold; }
-input.placeholder().____(color(GRAY))        // input::placeholder { color: gray; }
-```
-
-### Attribute Selectors
-
-Available on `HtmlTag`, `CssClass`, and `Selector`:
-
-```java
-// Attribute existence
-input.withAttr("disabled").____(...)                // input[disabled] { ... }
-
-// Attribute with value
-input.withAttr("type", "checkbox").____(...)         // input[type="checkbox"] { ... }
-
-// Shorthand __ syntax
-input.__("readonly").____(...)                       // input[readonly] { ... }
-input.__("type", "number").____(...)                 // input[type="number"] { ... }
-
-// Type shorthand
-input.__type("checkbox").____(...)                   // input[type="checkbox"] { ... }
-input.typeCheckbox().____(...)                        // input[type="checkbox"] { ... } (HtmlTag only)
-
-// Data attribute shorthand
-div.__data("theme", "dark").____(...)                // div[data-theme="dark"] { ... }
-
-// Substring matching
-a.attrStartsWith("href", "https").____(...)          // a[href^="https"] { ... }
-a.attrEndsWith("href", ".pdf").____(...)             // a[href$=".pdf"] { ... }
-input.attrSubstring("name", "email").____(...)       // input[name*="email"] { ... }
-
-// Chaining
-div.__("data-theme", "dark").__("data-variant", "compact").____(...)
-// div[data-theme="dark"][data-variant="compact"] { ... }
-```
+**Attribute selectors:** `withAttr(name)`, `withAttr(name, value)`, shorthand `__(name)`, `__(name, value)`, `__type(value)`, `typeCheckbox()` (HtmlTag-specific), `__data(key, value)`, substring matching `attrStartsWith()`, `attrEndsWith()`, `attrSubstring()`, `attrContains()`, `attrDashMatch()`. Chainable: `div.__("data-theme", "dark").__("data-variant", "compact").____(...)`
 
 ### Combinators
 
@@ -1690,304 +1375,70 @@ CssRules allStyles = rulesFrom(
 
 ## Utility-First Patterns (Tailwind / UnoCSS Style)
 
-Tailwind and UnoCSS popularized utility-first CSS: small, composable class names that each map to a few CSS properties. In luvs, you can build the same system - but the "class names" are Java constants (compile-time safe, ctrl+click, find-all-references) and the "rules" are generated by Java functions (parameterized, loopable, composable).
+Build utility-first CSS like Tailwind/UnoCSS but with Java's compile-time safety, IDE navigation (ctrl+click, find-all-references), parameterization, and data-driven generation.
 
-### The Utility Class (`Uc`)
-
-The key building block is a class that serves dual purpose: it's a **class name** (for use in HTML `class_()`) and a **rule generator** (for CSS output). Define it once in your project:
-
-```java
-public final class Uc implements CharSequence {
-    private static final java.util.LinkedHashSet<Uc> registry = new java.util.LinkedHashSet<>();
-
-    private final String name;
-    private final CssProperty[] properties;
-
-    private Uc(String name, CssProperty... properties) {
-        this.name = name;
-        this.properties = properties;
-        registry.add(this);
-    }
-
-    // For class_() — returns just the class name
-    @Override public String toString() { return name; }
-
-    // CharSequence delegation to name
-    @Override public int length() { return name.length(); }
-    @Override public char charAt(int i) { return name.charAt(i); }
-    @Override public CharSequence subSequence(int s, int e) { return name.subSequence(s, e); }
-
-    // Generates: .p_4 { padding: 1rem; }
-    public CssRule rule() { return new CssRule("." + name, properties); }
-
-    // Generates rules for ALL utilities that have been used
-    public static CssRules allRules() {
-        return CssRules.rules(registry.stream()
-            .map(Uc::rule).toArray(CssRule[]::new));
-    }
-
-    // Factory
-    public static Uc uc(String name, CssProperty... props) { return new Uc(name, props); }
-}
-```
-
-The registry auto-collects — only utilities actually instantiated in your code get CSS generated. No purge step needed.
-
-### Utility Factory Functions ($ prefix)
-
-Define shorthand functions that create `Uc` instances. Use `$` prefix to avoid clashing with luvml HTML element methods (`p()` is paragraph in luvml):
+**Approach 1: Dynamic utilities with auto-registry (`Uc` class)**
+Define a `Uc` class (copy once to your project) that implements `CharSequence` for use in `class_()` and tracks instances in a static registry. Factory functions create utilities on-demand:
 
 ```java
-import static luvs.P.*;
-import static luvs.V.*;
-import static myapp.Uc.uc;
-
-public final class U {
-    private U() {}
-
-    private static final double[] SCALE = {0, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 2.5, 3, 4, 5, 6};
-
-    // Spacing (scale-based: $p(4) → padding: 1rem)
-    public static Uc $p(int n)  { return uc("p_" + n, padding(rem(SCALE[n]))); }
-    public static Uc $px(int n) { return uc("px_" + n, padding_left(rem(SCALE[n])), padding_right(rem(SCALE[n]))); }
-    public static Uc $py(int n) { return uc("py_" + n, padding_top(rem(SCALE[n])), padding_bottom(rem(SCALE[n]))); }
-    public static Uc $m(int n)  { return uc("m_" + n, margin(rem(SCALE[n]))); }
-    public static Uc $gap(int n){ return uc("gap_" + n, gap(rem(SCALE[n]))); }
-
-    // Layout
-    public static Uc $flex()   { return uc("flex", display(FLEX)); }
-    public static Uc $grid()   { return uc("grid", display(GRID)); }
-    public static Uc $hidden() { return uc("hidden", display(NONE)); }
-
-    // Rounding
-    public static Uc $rounded(int px) { return uc("rounded_" + px, border_radius(V.px(px))); }
-
-    // Elevation
-    public static Uc $shadow(int level) {
-        return switch (level) {
-            case 1 -> uc("shadow_sm", box_shadow(ZERO, V.px(1), V.px(3), rgba(0,0,0,0.1)));
-            case 2 -> uc("shadow_md", box_shadow(ZERO, V.px(4), V.px(6), rgba(0,0,0,0.1)));
-            case 3 -> uc("shadow_lg", box_shadow(ZERO, V.px(10), V.px(15), rgba(0,0,0,0.15)));
-            default -> uc("shadow_none", box_shadow("none"));
-        };
-    }
-}
+public static Uc $p(int n) { return uc("p_" + n, padding(rem(SCALE[n]))); }  // $p(4) → .p_4 { padding: 1rem; }
+public static Uc $flex()   { return uc("flex", display(FLEX)); }
+public static Uc $shadow(int level) { return switch(level) { case 1 -> uc("shadow_sm", box_shadow(...)); ... }; }
 ```
 
-Usage — two sides of the same coin:
+**Usage:** `div(class_($p(4), $flex(), $rounded(8), $shadow(2)), ...)` → auto-generates CSS for only the utilities used. No purge step needed.
 
-```java
-import static myapp.U.*;
-
-// HTML side: $p(4) is a class name in class_()
-div(class_($p(4), $flex(), $rounded(8), $shadow(2)),
-    h1(class_($m(0)), "Title")
-)
-
-// CSS side: generate rules for everything that was used
-style(Uc.allRules())
-// Produces: .p_4 { padding: 1rem; } .flex { display: flex; } .rounded_8 { border-radius: 8px; } ...
-```
-
-Compare to Tailwind `class="p-4 flex rounded-lg shadow-md"` — same brevity, but parameterized and compile-time checked.
-
-### Pre-declared Utility Enum (Full Tailwind Pattern)
-
-For a Tailwind-like experience where all utility classes are pre-declared, use an enum with a switch mapping:
+**Approach 2: Pre-declared enum (full Tailwind pattern)**
+Define all utilities upfront as enum constants with a switch mapping:
 
 ```java
 public enum Tw implements CssClass {
-    // Layout
-    flex, inline_flex, block, inline_block, grid, hidden,
-    items_center, items_start, items_end,
-    justify_center, justify_between, justify_around,
-    flex_col, flex_row, flex_wrap_,
-
-    // Typography
-    text_center, text_left, text_right,
-    font_bold, font_medium, font_normal,
-    text_xs, text_sm, text_base, text_lg, text_xl, text_2xl,
-    truncate,
-
-    // Borders & Effects
-    rounded_sm, rounded, rounded_md, rounded_lg, rounded_full,
-    shadow_sm, shadow, shadow_md, shadow_lg;
-
+    flex, grid, hidden, items_center, justify_between, text_center, font_bold, rounded_lg, shadow_md;
+    
     CssProperty[] props() {
         return switch (this) {
-            case flex         -> a(display(FLEX));
-            case inline_flex  -> a(display(INLINE_FLEX));
-            case block        -> a(display(BLOCK));
-            case inline_block -> a(display(INLINE_BLOCK));
-            case grid         -> a(display(GRID));
-            case hidden       -> a(display(NONE));
+            case flex -> a(display(FLEX));
             case items_center -> a(align_items(AI_CENTER));
-            case items_start  -> a(align_items(AI_FLEX_START));
-            case items_end    -> a(align_items(AI_FLEX_END));
-            case justify_center  -> a(justify_content(JC_CENTER));
-            case justify_between -> a(justify_content(SPACE_BETWEEN));
-            case justify_around  -> a(justify_content(SPACE_AROUND));
-            case flex_col     -> a(flex_direction(COLUMN));
-            case flex_row     -> a(flex_direction(ROW));
-            case flex_wrap_   -> a(flex_wrap(FW_WRAP));
-            case text_center  -> a(text_align(CENTER));
-            case text_left    -> a(text_align(LEFT));
-            case text_right   -> a(text_align(RIGHT));
-            case font_bold    -> a(font_weight(BOLD));
-            case font_medium  -> a(font_weight(W500));
-            case font_normal  -> a(font_weight(NORMAL));
-            case text_xs      -> a(font_size(rem(0.75)));
-            case text_sm      -> a(font_size(rem(0.875)));
-            case text_base    -> a(font_size(rem(1)));
-            case text_lg      -> a(font_size(rem(1.125)));
-            case text_xl      -> a(font_size(rem(1.25)));
-            case text_2xl     -> a(font_size(rem(1.5)));
-            case truncate     -> a(overflow(HIDDEN), prop("text-overflow", "ellipsis"),
-                                   white_space(WS_NOWRAP));
-            case rounded_sm   -> a(border_radius(px(2)));
-            case rounded      -> a(border_radius(px(4)));
-            case rounded_md   -> a(border_radius(px(6)));
-            case rounded_lg   -> a(border_radius(px(8)));
-            case rounded_full -> a(border_radius(percent(50)));
-            case shadow_sm    -> a(box_shadow(ZERO, px(1), px(2), rgba(0,0,0,0.05)));
-            case shadow       -> a(box_shadow(ZERO, px(1), px(3), rgba(0,0,0,0.1)));
-            case shadow_md    -> a(box_shadow(ZERO, px(4), px(6), rgba(0,0,0,0.1)));
-            case shadow_lg    -> a(box_shadow(ZERO, px(10), px(15), rgba(0,0,0,0.1)));
+            case rounded_lg -> a(border_radius(px(8)));
+            // ... ~50-100 utilities total
         };
     }
-
-    private static CssProperty[] a(CssProperty... p) { return p; }
-
-    /** Generates CSS for all utilities. */
+    
     public static CssRules allRules() {
-        return rules(java.util.Arrays.stream(values())
-            .map(tw -> tw.____(tw.props()))
-            .toArray(CssRule[]::new));
+        return rules(Arrays.stream(values()).map(tw -> tw.____(tw.props())).toArray(CssRule[]::new));
     }
 }
 ```
 
-Use in HTML just like Tailwind — but type-safe:
+**Usage:** `div(class_(flex, items_center, justify_between, rounded_lg), ...)` — identical to Tailwind but type-safe (compile error on typos, IDE refactoring works).
 
-```java
-// Tailwind: <div class="flex items-center justify-between rounded-lg shadow-md">
-div(class_(flex, items_center, justify_between, rounded_lg, shadow_md), ...)
-```
-
-Misspell a class name? Compile error. Rename `shadow_md`? IDE renames all usages.
-
-### Shortcuts (Composed Utility Classes)
-
-UnoCSS "shortcuts" combine multiple utilities under one name. In luvs, define classes whose rules compose utility functions:
+**Shortcuts (UnoCSS-style):** Combine utilities into named components:
 
 ```java
 enum Shortcut implements CssClass {
-    btn, card, input_field;
-
+    btn, card;
     public static CssRules allRules() {
         return rules(
-            btn.____(
-                display(INLINE_BLOCK), padding(rem(0.5), rem(1)), font_weight(W500),
-                border_radius(px(8)), box_shadow(ZERO, px(1), px(3), rgba(0,0,0,0.1)),
-                cursor(POINTER), transition(BACKGROUND, s(0.2))
-            ),
-
-            card.____(
-                background(WHITE), border_radius(px(8)), padding(rem(1.5)),
-                box_shadow(ZERO, px(2), px(8), rgba(0,0,0,0.1))
-            ),
-
-            input_field.____(
-                padding(rem(0.5), rem(0.75)), border(px(1), SOLID, "#ddd"),
-                border_radius(px(4)), font_size(rem(1)),
-                transition(BORDER_COLOR, s(0.2))
-            )
+            btn.____(display(INLINE_BLOCK), padding(rem(0.5), rem(1)), border_radius(px(8)), ...),
+            card.____(background(WHITE), padding(rem(1.5)), box_shadow(...))
         );
     }
 }
 ```
 
-### Rule Generators (Reusable Multi-Rule Patterns)
-
-For patterns that produce multiple rules (base + hover + disabled etc.), return `CssRules`:
+**Rule generators:** Create multi-rule patterns (base + hover + disabled):
 
 ```java
-static CssRules hoverLift(CssClass cls) {
+static CssRules buttonVariant(CssClass cls, String bg, String hoverBg) {
     return rules(
-        cls.____(transition(TRANSFORM, s(0.2), BOX_SHADOW, s(0.2))),
-        cls.hover().____(
-            transform(translateY(px(-4))),
-            box_shadow(ZERO, px(4), px(16), rgba(0,0,0,0.15))
-        )
-    );
-}
-
-static CssRules buttonVariant(CssClass cls, CharSequence bg, CharSequence hoverBg) {
-    return rules(
-        cls.____(
-            display(INLINE_BLOCK), padding(rem(0.5), rem(1)), background(bg),
-            color(WHITE), border_radius(px(4)), cursor(POINTER),
-            transition(BACKGROUND, s(0.3))
-        ),
+        cls.____(background(bg), padding(...), cursor(POINTER), transition(BACKGROUND, s(0.3))),
         cls.hover().____(background(hoverBg)),
-        cls.disabled().____(P.opacity(0.5), cursor(NOT_ALLOWED))
+        cls.disabled().____(opacity(0.5), cursor(NOT_ALLOWED))
     );
 }
 ```
 
-### Assembling Everything
-
-Assemble with `rulesFrom()` — it accepts any mix of `CssRuleFrag` (rules, comments, empty lines):
-
-```java
-public static CssRules allAppStyles() {
-    return rulesFrom(
-        commentBlock("=== Utility Classes ==="),
-        Tw.allRules(),
-        emptyLine(),
-
-        commentBlock("=== Component Shortcuts ==="),
-        Shortcut.allRules(),
-        emptyLine(),
-
-        commentBlock("=== Interactive Effects ==="),
-        hoverLift(case_card),
-        emptyLine(),
-
-        commentBlock("=== Button Variants ==="),
-        buttonVariant(btn_primary, PRIMARY, PRIMARY_DARK),
-        buttonVariant(btn_danger, DANGER, DANGER_DARK),
-
-        commentBlock("=== Data-Driven Category Styles ==="),
-        forEachRule(CATEGORIES, cat ->
-            cat_btn.__data("category-id", cat.id()).____( background_color(cat.color()) )
-        ),
-        emptyLine(),
-
-        commentBlock("=== App-Specific Styles ==="),
-        AppStyles.appRules()
-    );
-}
-```
-
-Organize sub-sections as private methods returning `CssRules`, then assemble in one `rulesFrom()` call with comments and empty lines for readability — keeps large stylesheets navigable.
-
-### What you get vs Tailwind / UnoCSS
-
-| | Tailwind / UnoCSS | luvs |
-|---|---|---|
-| Small composable utilities | Yes (string class names) | Yes (enum constants or `Uc` objects) |
-| Utility-first workflow | Yes | Yes |
-| Co-located with HTML | Yes | Yes |
-| Compile-time typo checking | No | Yes |
-| ctrl+click to definition | No | Yes |
-| find-all-references, rename | No | Yes |
-| Parameterized utilities | No (`p-4` is fixed) | Yes (`$p(4)`, `$shadow(2)`) |
-| Data-driven rule generation | No | Yes (`forEachRule`) |
-| Purge step needed | Yes | No (only used classes exist) |
-| Runtime cost | Varies | None (compile-time) |
-
-## Complete Example
+**vs Tailwind/UnoCSS:** Same workflow (small composable classes, co-located with HTML) but adds compile-time checking, IDE navigation, parameterized utilities (`$p(n)` vs fixed `p-4`), data-driven generation (`forEachRule`), no purge step, zero runtime cost.
 
 Putting it all together:
 
@@ -2119,118 +1570,76 @@ public class TodoApp {
 }
 ```
 
-## Quick Reference
+## Complete Example
 
-### Property methods that accept type-safe enums
-
-| Property | Enum type | Common values |
-|----------|-----------|---------------|
-| `display()` | `Display` | `FLEX`, `GRID`, `BLOCK`, `NONE` |
-| `position()` | `Position` | `ABSOLUTE`, `RELATIVE`, `FIXED`, `STICKY` |
-| `font_weight()` | `FontWeight` | `BOLD`, `NORMAL`, `W100`-`W900` |
-| `text_align()` | `TextAlign` | `LEFT`, `RIGHT`, `CENTER`, `JUSTIFY` |
-| `flex_direction()` | `FlexDirection` | `ROW`, `COLUMN`, `ROW_REVERSE` |
-| `justify_content()` | `JustifyContent` | `FLEX_START`, `SPACE_BETWEEN`, `JC_CENTER` |
-| `align_items()` | `AlignItems` | `AI_CENTER`, `STRETCH`, `BASELINE` |
-| `overflow()` | `Overflow` | `HIDDEN`, `SCROLL`, `OV_AUTO` |
-| `cursor()` | `Cursor` | `POINTER`, `GRAB`, `NOT_ALLOWED` |
-| `border_collapse()` | `BorderCollapse` | `BC_COLLAPSE`, `BC_SEPARATE` |
-| `box_sizing()` | `BoxSizing` | `BORDER_BOX`, `CONTENT_BOX` |
-| `object_fit()` | `ObjectFit` | `OF_COVER`, `OF_CONTAIN` |
-| `resize()` | `Resize` | `VERTICAL`, `HORIZONTAL`, `RS_BOTH` |
-| `font_style()` | `FontStyle` | `FS_ITALIC`, `FS_NORMAL` |
-| `white_space()` | `WhiteSpace` | `WS_NOWRAP`, `WS_PRE` |
-| `flex_wrap()` | `FlexWrap` | `FW_WRAP`, `FW_NOWRAP` |
-| `flex()` | `Flex` | `FLEX_1`, `FLEX_AUTO`, `FLEX_NONE` |
-| `color()` | `Color` | `RED`, `BLUE`, `WHITE`, `BLACK`, etc. |
-| `background_color()` | `Color` | Same as above |
-| `text_decoration()` | - | `TD_NONE`, `UNDERLINE`, `LINE_THROUGH` |
-| `border()` | - | `SOLID`, `DASHED`, `DOTTED` (BorderStyle) |
-| `transition()` | `TimingFunction` | `EASE`, `LINEAR`, `EASE_IN_OUT` |
-| `animation()` | `TimingFunction` | Same as above; also `cubicBezier()`, `steps()` |
-
-All property methods also accept `CharSequence` (raw strings) as a fallback, so you are never blocked.
-
-### Selector chaining summary
-
-Starting from `HtmlTag` or `CssClass`:
-```
-.hover()  .focus()  .active()  .disabled()  .checked()  .firstChild()  .nthChild()
-.not()    .notHover()  .notDisabled()  ...
-.before() .after()  .placeholder()  .firstLine()  .firstLetter()  .selection()
-.child()  .descendant()  .adjacent()  .sibling()
-.and()    .withAttr()  .__()  .__type()  .__data()
-.attrStartsWith()  .attrEndsWith()  .attrSubstring()  .attrContains()  .attrDashMatch()
-```
-
-All return `Selector`, which itself supports further chaining of pseudo-classes, pseudo-elements, and attribute selectors.
-
-### Media query conditions summary
-
-From `import static luvs.MQ.*;`:
-```
-media(condition, rules...)          → @media condition { rules }
-minWidth(val)  maxWidth(val)        → (min-width: val) / (max-width: val)
-minHeight(val) maxHeight(val)       → (min-height: val) / (max-height: val)
-prefersColorScheme(DARK/LIGHT)      → (prefers-color-scheme: dark/light)
-prefersReducedMotion()              → (prefers-reduced-motion: reduce)
-orientation(PORTRAIT/LANDSCAPE)     → (orientation: portrait/landscape)
-screen()  print()  all()            → screen / print / all
-not(cond)                           → not cond
-cond.and(other)                     → cond and other
-cond.or(other)                      → cond, other
-condition("raw")                    → raw (escape hatch)
-feature("name", val)                → (name: val) (generic)
-```
-
-## Real-World Notes
-
-Observations from using luvs in production.
-
-### Line Count
-
-In a real project, the Java DSL was ~32% more lines than the CSS it replaced. The increase is **not** from Java verbosity in the property lines themselves — the DSL maps 1:1 to CSS and CSS properties are short, so each `color(RED)` or `padding(rem(1))` is about the same length as `color: red` or `padding: 1rem`. The extra lines come from:
-
-- **Enum declarations** — each class name is one word on its own line (`container, card, header, btn;`), whereas CSS has no equivalent declaration
-- **Method signatures and structure** — organizing rules into named methods (`videoSectionRules()`, `modalRules()`) adds a few lines per group
-- **Imports** — with wildcard imports (`import static luvs.P.*`) these are minimal, typically 5-6 lines
-
-The line increase buys logical decomposition that flat CSS lacks.
-
-### Centralized Color Palette
-
-CSS variables (`:root { --primary: #667eea }`) solve color duplication within a single CSS file. But plain CSS doesn't have a way to share constants across multiple `.css` files — each file is independent. Sass has shared variables across partials, but that's a preprocessor, not CSS.
-
-In luvs, since styles are Java, a shared `Colors.java` file works across any number of style files naturally:
+Full application demonstrating luvs + luvml integration:
 
 ```java
-public final class Colors {
-    public static final String
-        PRIMARY = "#667eea",
-        PRIMARY_DARK = "#5568d3",
-        BORDER_LIGHT = "#ddd",
-        TEXT_MUTED = "#666",
-        BG_DARK = "#1a1a1a"
-    ;
-    // ... more colors
+import static luvml.E.*; import static luvml.C.*; import static luvml.T.text;
+import static luvs.P.*; import static luvs.V.*; import static luvs.HtmlTag.*;
+import static luvs.CssRules.*; import static luvs.CssProp.*;
+import static TodoApp.Cls.*; import static TodoApp.Theme.*;  // Static import inner enums
+
+public class TodoApp {
+    enum Cls implements CssClass { app, todo_list, todo_item, completed, add_btn; }
+    enum Theme implements CssVariable { bg_color, text_color, accent; }
+
+    static CssRules styles() {
+        return rules(
+            $root.____(bg_color.def("#f5f5f5"), text_color.def("#333"), accent.def("#4a90d9")),
+            $all.____(margin(ZERO), padding(ZERO), box_sizing(BORDER_BOX)),
+            body.____(font_family("system-ui", "sans-serif"), background_color(bg_color.ref()), color(text_color.ref())),
+            app.____(max_width(px(600)), margin(rem(2), AUTO), padding(ZERO, rem(1))),
+            todo_list.____(display(FLEX), flex_direction(COLUMN), gap(rem(0.5))),
+            todo_item.____(
+                display(FLEX), align_items(AI_CENTER), padding(rem(1)),
+                background(WHITE), border_radius(px(8)),
+                box_shadow(ZERO, px(1), px(3), rgba(0, 0, 0, 0.1)),
+                transition(TRANSFORM, s(0.2), BOX_SHADOW, s(0.2))
+            ),
+            todo_item.hover().____(transform(translateY(px(-2))), box_shadow(ZERO, px(4), px(8), rgba(0, 0, 0, 0.15))),
+            completed.____(P.opacity(0.6), text_decoration("line-through")),
+            add_btn.____(
+                background(accent.ref()), color(WHITE), border("none"),
+                padding(rem(0.75), rem(1.5)), border_radius(px(8)),
+                cursor(POINTER), font_size(rem(1)), transition(BACKGROUND, s(0.3))
+            ),
+            add_btn.hover().____(P.opacity(0.9)),
+            add_btn.disabled().____(P.opacity(0.5), cursor(NOT_ALLOWED))
+        );
+    }
+
+    public static void main(String[] args) {
+        var page = html(
+            head(title("Todo App"), style(styles())),
+            body(div(class_(app),
+                h1("My Todos"),
+                div(class_(todo_list),
+                    div(class_(todo_item), text("Learn LuvS")),
+                    div(class_(todo_item, completed), text("Set up project"))
+                ),
+                luvml.E.button(class_(add_btn), text("Add Todo"))
+            ))
+        );
+        System.out.println("<!DOCTYPE html>\n" + HtmlRenderer.asFormattedString(page));
+    }
 }
 ```
 
-**💡 Pro-tip:** Use multi-field declarations like above (not one field per line) to reduce verbosity. This is standard Java - it makes your code more concise without sacrificing clarity. Avoiding unnecessarily verbose patterns makes LuvS look better and your code more maintainable.
+**Key points:** CSS variables in `:root`, universal reset with `$all`, enum-based class names (compile-time safe, IDE navigation), pseudo-classes (`.hover()`), transitions, box-shadow, flexbox layout, static imports for clean syntax.
 
-Any style file does `import static Colors.*` and uses the same palette. A new component picks from the existing constants instead of hardcoding a slightly-off `#6a7fcb`. This is just standard Java — nothing special about luvs here — but it's a benefit of styles being code rather than a separate string-based language.
+## Quick Reference
 
-### The `prop()` Escape Hatch in Practice
+**Type-safe property methods:** `display(FLEX/GRID/BLOCK/NONE)`, `position(ABSOLUTE/RELATIVE/FIXED/STICKY)`, `font_weight(BOLD/NORMAL/W100-W900)`, `text_align(LEFT/RIGHT/CENTER)`, `flex_direction(ROW/COLUMN)`, `justify_content(SPACE_BETWEEN/JC_CENTER)`, `align_items(AI_CENTER/STRETCH)`, `overflow(HIDDEN/SCROLL/OV_AUTO)`, `cursor(POINTER/GRAB/NOT_ALLOWED)`, `border_collapse(BC_COLLAPSE)`, `box_sizing(BORDER_BOX)`, `object_fit(OF_COVER/OF_CONTAIN)`, `color(RED/BLUE/WHITE/BLACK/...)`, `transition(TimingFunction: EASE/LINEAR/EASE_IN_OUT)`. All accept `CharSequence` fallback.
 
-Some vendor-prefixed or newer CSS properties aren't in the DSL yet:
+**Selector chaining:** From `HtmlTag` or `CssClass`: `hover()`, `focus()`, `active()`, `disabled()`, `checked()`, `firstChild()`, `nthChild()`, `not()`, `notHover()`, `before()`, `after()`, `placeholder()`, `firstLine()`, `child()`, `descendant()`, `adjacent()`, `sibling()`, `and()`, `withAttr()`, `__()`, `__type()`, `__data()`, `attrStartsWith/Ends/Substring/Contains/DashMatch()`. All return `Selector` supporting further chaining.
 
-```java
-prop("-webkit-line-clamp", "3"),
-prop("-webkit-box-orient", "vertical")
-```
+**Media queries** (`MQ.*`): `media(condition, rules...)`, `minWidth(val)`, `maxWidth(val)`, `minHeight(val)`, `maxHeight(val)`, `prefersColorScheme(DARK/LIGHT)`, `prefersReducedMotion()`, `orientation(PORTRAIT/LANDSCAPE)`, `screen()`, `print()`, `not(cond)`, `cond.and(other)`, `cond.or(other)`, `condition("raw")`, `feature(name, val)`.
 
-This is expected — CSS has hundreds of properties and vendor extensions. The `prop()` fallback means you're never blocked; you just lose type safety for that one property.
+## Real-World Notes
 
-### Trade-off: No Instant Edit-Refresh
+Nowadays there is a trend of css into code like Tailwind and Uno, going along same trends luvs pushes limits in the JAva world.
 
-CSS changes need a recompile. In a typical Maven/Spring Boot project with hot-reload (e.g., spring-boot-devtools), this is a few seconds. For projects without hot-reload, this is the main ergonomic cost compared to editing a `.css` file and refreshing the browser.
+**Escape hatch usage:** Vendor-prefixed or newer properties not yet in the DSL use `prop("-webkit-line-clamp", "3")`, `prop("-webkit-box-orient", "vertical")`. This is expected - CSS has hundreds of properties. `prop()` means you're never blocked, you just lose type safety for that property. PLEASE USE THIS RARELY expect 99% of what you need is covered.
+
+**Trade-off:** CSS changes need recompile (~few seconds with hot-reload tools like spring-boot-devtools). Main ergonomic cost vs editing `.css` and refreshing browser for projects without hot-reload.

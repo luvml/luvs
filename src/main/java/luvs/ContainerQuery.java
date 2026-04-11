@@ -82,6 +82,8 @@ public non-sealed class ContainerQuery implements CssRuleFrag {
                     "@layer cannot be nested inside @container");
                 case Layer.LayerOrder ignored -> throw new IllegalArgumentException(
                     "@layer ordering cannot be nested inside @container");
+                case Page ignored -> throw new IllegalArgumentException(
+                    "@page cannot be nested inside @container");
                 case CssComment ignored -> {}
                 case CssEmptyLine ignored -> {}
             }
@@ -107,6 +109,11 @@ public non-sealed class ContainerQuery implements CssRuleFrag {
 
         sb.append("}");
         return sb.toString();
+    }
+
+    @Override
+    public String toString() {
+        return delegatedCharSeqVal();
     }
 
     /**

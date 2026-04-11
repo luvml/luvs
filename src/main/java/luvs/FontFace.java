@@ -43,6 +43,11 @@ public non-sealed class FontFace implements CssRuleFrag {
         return "@font-face {\n    " + descriptorsStr + "\n}";
     }
 
+    @Override
+    public String toString() {
+        return delegatedCharSeqVal();
+    }
+
     /**
      * Represents a font descriptor (name-value pair inside @font-face).
      */
