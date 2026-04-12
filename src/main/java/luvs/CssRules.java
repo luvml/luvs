@@ -1,6 +1,7 @@
 package luvs;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -11,11 +12,11 @@ import java.util.stream.Stream;
  */
 public final class CssRules implements CssRuleFrag {
 
-    private final CssRule[] rules;
+    private final CssRuleFrag[] rules;
     private final Keyframes[] keyframes;
     private final CssRuleFrag[] orderedFragments;
 
-    public CssRules(CssRule... rules) {
+    public CssRules(CssRuleFrag... rules) {
         this.rules = rules;
         this.keyframes = new Keyframes[0];
         this.orderedFragments = rules;
@@ -162,14 +163,20 @@ public final class CssRules implements CssRuleFrag {
         return sb.toString();
     }
 
-    CssRule[] getRules() {
-        return rules;
+    /**
+     * Returns all fragments as-is. No flattening needed here because:
+     * - Rendering already handles nested CssRules recursively
+     * - MediaQuery/Supports/etc. flattenContent() methods also handle nested CssRules
+     * - Flattening twice would be redundant
+     */
+    public CssRuleFrag[] getRules() {
+        return orderedFragments;
     }
 
     /**
      * Factory method for creating styles.
      */
-    public static CssRules rules(CssRule... rules) {
+    public static CssRules rules(CssRuleFrag... rules) {
         return new CssRules(rules);
     }
 
@@ -280,4 +287,9 @@ public final class CssRules implements CssRuleFrag {
             .toArray();
         return new CssRules(expandedItems);
     }
+    
+    public static CssRules rulesFrom(Collection<CssRuleFrag> fragments) {
+        return rulesFrom(fragments.toArray(CssRuleFrag[]::new));
+    }
+    
 }

@@ -31,9 +31,9 @@ import java.util.stream.Collectors;
 public non-sealed class Supports implements CssRuleFrag {
 
     private final SupportsCondition condition;
-    private final CssRule[] rules;
+    private final CssRuleFrag[] rules;
 
-    private Supports(SupportsCondition condition, CssRule[] rules) {
+    private Supports(SupportsCondition condition, CssRuleFrag[] rules) {
         this.condition = condition;
         this.rules = rules;
     }
@@ -45,12 +45,12 @@ public non-sealed class Supports implements CssRuleFrag {
      * @param content   CSS rule fragments to include. Accepts {@link CssRule} and {@link CssRules}.
      */
     public static Supports supports(SupportsCondition condition, CssRuleFrag... content) {
-        List<CssRule> rulesList = new ArrayList<>();
+        List<CssRuleFrag> rulesList = new ArrayList<>();
         flattenContent(content, rulesList);
-        return new Supports(condition, rulesList.toArray(CssRule[]::new));
+        return new Supports(condition, rulesList.toArray(CssRuleFrag[]::new));
     }
 
-    private static void flattenContent(CssRuleFrag[] fragments, List<CssRule> out) {
+    private static void flattenContent(CssRuleFrag[] fragments, List<CssRuleFrag> out) {
         for (CssRuleFrag frag : fragments) {
             switch (frag) {
                 case CssRule rule -> out.add(rule);
@@ -80,7 +80,7 @@ public non-sealed class Supports implements CssRuleFrag {
         StringBuilder sb = new StringBuilder();
         sb.append("@supports ").append(condition).append(" {\n");
 
-        for (CssRule rule : rules) {
+        for (var rule : rules) {
             String[] lines = rule.toString().split("\n");
             for (String line : lines) {
                 sb.append("    ").append(line).append("\n");
@@ -96,6 +96,10 @@ public non-sealed class Supports implements CssRuleFrag {
     public String toString() {
         return delegatedCharSeqVal();
     }
+
+    /*CssRuleFrag[] getRules() {
+        return rules;
+    }*/
 
     /**
      * Represents a @supports condition.

@@ -11,10 +11,12 @@ public final class S {
     private S() {} // Utility class
 
     // --- Basic Selectors ---
-    public static String starSelector() { return "*"; }
+    /*public static String starSelector() { return "*"; }
+    public static String id(String idName) { return "#" + idName.trim(); }*/
+    
     public static String tag(String tagName) { return tagName; }
     public static String cls(String className) { return "." + className.trim(); }
-    public static String id(String idName) { return "#" + idName.trim(); }
+    
     
     // --- Attribute Selectors ---
     public static String attr(String attributeName) { return "[" + attributeName + "]"; }

@@ -33,9 +33,9 @@ import java.util.stream.Collectors;
 public non-sealed class MediaQuery implements CssRuleFrag {
 
     private final MediaCondition condition;
-    private final CssRule[] rules;
+    private final CssRuleFrag[] rules;
 
-    private MediaQuery(MediaCondition condition, CssRule[] rules) {
+    private MediaQuery(MediaCondition condition, CssRuleFrag[] rules) {
         this.condition = condition;
         this.rules = rules;
     }
@@ -48,12 +48,12 @@ public non-sealed class MediaQuery implements CssRuleFrag {
      *                  Nested {@link MediaQuery} will throw {@link IllegalArgumentException}.
      */
     public static MediaQuery media(MediaCondition condition, CssRuleFrag... content) {
-        List<CssRule> rulesList = new ArrayList<>();
+        List<CssRuleFrag> rulesList = new ArrayList<>();
         flattenContent(content, rulesList);
-        return new MediaQuery(condition, rulesList.toArray(CssRule[]::new));
+        return new MediaQuery(condition, rulesList.toArray(CssRuleFrag[]::new));
     }
 
-    private static void flattenContent(CssRuleFrag[] fragments, List<CssRule> out) {
+    private static void flattenContent(CssRuleFrag[] fragments, List<CssRuleFrag> out) {
         for (CssRuleFrag frag : fragments) {
             switch (frag) {
                 case CssRule rule -> out.add(rule);
@@ -82,7 +82,7 @@ public non-sealed class MediaQuery implements CssRuleFrag {
         return condition;
     }
 
-    CssRule[] getRules() {
+    CssRuleFrag[] getRules() {
         return rules;
     }
 

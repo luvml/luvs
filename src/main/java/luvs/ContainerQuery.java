@@ -35,9 +35,9 @@ public non-sealed class ContainerQuery implements CssRuleFrag {
 
     private final String containerName; // null for unnamed
     private final ContainerCondition condition;
-    private final CssRule[] rules;
+    private final CssRuleFrag[] rules;
 
-    private ContainerQuery(String containerName, ContainerCondition condition, CssRule[] rules) {
+    private ContainerQuery(String containerName, ContainerCondition condition, CssRuleFrag[] rules) {
         this.containerName = containerName;
         this.condition = condition;
         this.rules = rules;
@@ -60,12 +60,12 @@ public non-sealed class ContainerQuery implements CssRuleFrag {
     }
 
     private static ContainerQuery createContainer(String name, ContainerCondition condition, CssRuleFrag[] content) {
-        List<CssRule> rulesList = new ArrayList<>();
+        List<CssRuleFrag> rulesList = new ArrayList<>();
         flattenContent(content, rulesList);
-        return new ContainerQuery(name, condition, rulesList.toArray(CssRule[]::new));
+        return new ContainerQuery(name, condition, rulesList.toArray(CssRuleFrag[]::new));
     }
 
-    private static void flattenContent(CssRuleFrag[] fragments, List<CssRule> out) {
+    private static void flattenContent(CssRuleFrag[] fragments, List<CssRuleFrag> out) {
         for (CssRuleFrag frag : fragments) {
             switch (frag) {
                 case CssRule rule -> out.add(rule);
@@ -99,7 +99,7 @@ public non-sealed class ContainerQuery implements CssRuleFrag {
         }
         sb.append(condition).append(" {\n");
 
-        for (CssRule rule : rules) {
+        for (var rule : rules) {
             String[] lines = rule.toString().split("\n");
             for (String line : lines) {
                 sb.append("    ").append(line).append("\n");
