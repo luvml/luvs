@@ -87,7 +87,29 @@ video_chip.child(input.typeCheckbox().checked()).____(...)
 // Use fluent DSL for readability, type safety, IDE navigation (find-all-references, rename-symbol)
 ```
 
-**HtmlTag enum:** Type-safe tag selectors - `body`, `div`, `span`, `p`, `a`, `h1`-`h6`, `ul`, `ol`, `li`, `table`, `form`, `input`, `button`, `label`, `select`, `textarea`, `section`, `article`, `header`, `footer`, `nav`, `main`, `img`, `code`, `pre`, `details`, `summary`, `video`, `audio`, etc. Special: `$all` (`*`), `$root` (`:root`), `$$backdrop` (`::backdrop`).
+**HtmlTag enum:** Type-safe tag selectors - All ~110 standard HTML5 tags including: `body`, `div`, `span`, `p`, `a`, `h1`-`h6`, `ul`, `ol`, `li`, `table`, `form`, `input`, `button`, `label`, `select`, `textarea`, `section`, `article`, `header`, `footer`, `nav`, `main`, `img`, `code`, `pre`, `details`, `summary`, `video`, `audio`, `canvas`, `svg`, etc. Special: `$all` (`*`), `$root` (`:root`), `$$backdrop` (`::backdrop`).
+
+**Underscore alternates:** Every tag has a `_` suffix alternate (e.g., `div_`, `h4_`, `p_`) to avoid conflicts when using both `luvml.E.*` and `luvs.HtmlTag.*` static imports. Both produce identical CSS output.
+
+```java
+// When using BOTH luvml (HTML) and luvs (CSS) in the same file:
+import static luvml.E.*;        // h4() is the HTML element factory method
+import static luvs.HtmlTag.*;   // h4_ is the selector (no conflict!)
+
+// HTML structure
+var page = html(body(
+    h4("Welcome"),     // luvml h4() method creates <h4> element
+    div("Content")     // luvml div() method creates <div> element
+));
+
+// CSS styles
+var css = rules(
+    h4_.____(color(BLUE)),      // luvs h4_ selector → h4 { color: blue; }
+    div_.____(padding(rem(1)))  // luvs div_ selector → div { padding: 1rem; }
+);
+```
+
+Use alternates when needed to avoid conflicts. Without alternates, you'd need fully qualified names like `luvs.HtmlTag.h4.____(...)`.
 
 **CssClass enum:** Define class names as `enum Styles implements CssClass { container, card, btn; }`. Enum name = class name. Rules defined separately (flexibility for SSR/client code sharing). Use in HTML via `div(class_(container, card), ...)` → `<div class="container card">`.
 
