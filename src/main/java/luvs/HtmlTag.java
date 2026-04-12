@@ -17,22 +17,96 @@ public enum HtmlTag implements DelegatedCharSeq,
     $all,         // Universal selector: *
     $$backdrop,   // ::backdrop pseudo-element
 
-    // Common elements
-    body,
-    div, span, p, a,
+    // Document structure
+    html, head, body, title, base, link, meta, style,
+
+    // Sections
+    section, article, aside, nav, header, footer, main, hgroup,
     h1, h2, h3, h4, h5, h6,
-    ul, ol, li,
-    table, tr, td, th, thead, tbody, tfoot,
-    form, input, button, label, select, option, textarea,
-    section, article, header, footer, nav, main, aside,
-    img, figure, figcaption,
-    strong, em, code, pre,
-    blockquote, cite, q,
-    dl, dt, dd,
-    iframe, canvas, svg,
-    video, audio, source,
-    details, summary,
-    mark, time, progress, meter;
+
+    // Grouping content
+    div, p, hr, pre, blockquote,
+    ol, ul, li, dl, dt, dd,
+    figure, figcaption,
+
+    // Text semantics
+    a, abbr, b, bdi, bdo, br, cite, code, data, dfn, em, i,
+    kbd, mark, q, rp, rt, ruby, s, samp, small, span, strong,
+    sub, sup, time, u, var, wbr,
+
+    // Edits
+    del, ins,
+
+    // Embedded content
+    area, audio, img, map, track, video,
+    embed, iframe, object, param, picture, portal, source,
+
+    // Canvas and graphics
+    canvas, svg,
+
+    // Tabular data
+    table, caption, colgroup, col, tbody, thead, tfoot, tr, td, th,
+
+    // Forms
+    form, label, input, button, select, datalist, optgroup, option,
+    textarea, output, progress, meter, fieldset, legend,
+
+    // Interactive elements
+    details, summary, dialog,
+
+    // Scripting
+    script, noscript, template, slot,
+
+    // Other valid HTML5 tags
+    address, search, menu,
+
+    // ========== Alternate names (with _ suffix) ==========
+    // Use these when primary names conflict with luvml.E static methods
+    // Example: import static luvml.E.*; import static luvs.HtmlTag.*;
+    //          div() is luvml method, div_ is HtmlTag selector
+
+    // Document structure alternates
+    html_, head_, body_, title_, base_, link_, meta_, style_,
+
+    // Sections alternates
+    section_, article_, aside_, nav_, header_, footer_, main_, hgroup_,
+    h1_, h2_, h3_, h4_, h5_, h6_,
+
+    // Grouping content alternates
+    div_, p_, hr_, pre_, blockquote_,
+    ol_, ul_, li_, dl_, dt_, dd_,
+    figure_, figcaption_,
+
+    // Text semantics alternates
+    a_, abbr_, b_, bdi_, bdo_, br_, cite_, code_, data_, dfn_, em_, i_,
+    kbd_, mark_, q_, rp_, rt_, ruby_, s_, samp_, small_, span_, strong_,
+    sub_, sup_, time_, u_, var_, wbr_,
+
+    // Edits alternates
+    del_, ins_,
+
+    // Embedded content alternates
+    area_, audio_, img_, map_, track_, video_,
+    embed_, iframe_, object_, param_, picture_, portal_, source_,
+
+    // Canvas and graphics alternates
+    canvas_, svg_,
+
+    // Tabular data alternates
+    table_, caption_, colgroup_, col_, tbody_, thead_, tfoot_, tr_, td_, th_,
+
+    // Forms alternates
+    form_, label_, input_, button_, select_, datalist_, optgroup_, option_,
+    textarea_, output_, progress_, meter_, fieldset_, legend_,
+
+    // Interactive elements alternates
+    details_, summary_, dialog_,
+
+    // Scripting alternates
+    script_, noscript_, template_, slot_,
+
+    // Other alternates
+    address_, search_, menu_;
 
     @Override
     public String delegatedCharSeqVal() {
@@ -40,7 +114,11 @@ public enum HtmlTag implements DelegatedCharSeq,
             case $all -> "*";
             case $root -> ":root";
             case $$backdrop -> "::backdrop";
-            default -> name();
+            default -> {
+                String name = name();
+                // Strip trailing _ from alternate names (div_ -> div)
+                yield name.endsWith("_") ? name.substring(0, name.length() - 1) : name;
+            }
         };
     }
 
