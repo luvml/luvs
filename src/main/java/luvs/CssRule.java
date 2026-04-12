@@ -11,9 +11,9 @@ import luvx.DelegatedCharSeq;
 public non-sealed class CssRule implements CssRuleFrag {
 
     private final CharSequence selector;
-    private final CssProperty[] properties;
+    private final CssPropertyFrag[] properties;
 
-    public CssRule(CharSequence selector, CssProperty... properties) {
+    public CssRule(CharSequence selector, CssPropertyFrag... properties) {
         this.selector = selector;
         this.properties = properties;
     }
@@ -23,7 +23,7 @@ public non-sealed class CssRule implements CssRuleFrag {
      * @param selector The CSS selector.
      * @param properties The CSS properties for this rule.
      */
-    public static CssRule rule(CharSequence selector, CssProperty... properties) {
+    public static CssRule rule(CharSequence selector, CssPropertyFrag... properties) {
         return new CssRule(selector, properties);
     }   
 
@@ -37,7 +37,7 @@ public non-sealed class CssRule implements CssRuleFrag {
         StringBuilder sb = new StringBuilder();
         sb.append(selector).append(" {\n");
         String propertiesStr = Arrays.stream(properties)
-                .map(CssProperty::toString)
+                .map(CssPropertyFrag::toString)
                 .collect(Collectors.joining("\n"));
         // Indent properties for readability
         for (String line : propertiesStr.split("\n")) {

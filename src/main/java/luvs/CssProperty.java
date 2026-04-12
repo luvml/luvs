@@ -7,8 +7,7 @@ import luvx.DelegatedCharSeq;
  * Represents a single, immutable CSS property-value pair (e.g., "color: blue;").
  * Implements DelegatedCharSeq to be used in varargs with Strings.
  */
-public final class CssProperty implements DelegatedCharSeq {
-
+public final class CssProperty implements CssPropertyFrag {
     private final String name;
     private final CharSequence value;
 
@@ -35,9 +34,10 @@ public final class CssProperty implements DelegatedCharSeq {
             : value.toString();
         return name + ": " + valueStr + ";";
     }
-
+    
     @Override
     public String toString() {
         return delegatedCharSeqVal();
     }
+    
 }

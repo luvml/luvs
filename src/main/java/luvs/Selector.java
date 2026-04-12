@@ -29,14 +29,14 @@ public final class Selector implements CharSequence,
         return new Selector(parts);
     }
 
-    public CssRule ____(CssProperty... properties) {
+    public CssRule ____(CssPropertyFrag... properties) {
         return rule(properties);
     }
 
     /**
      * Creates a CSS rule from this selector with properties.
      */
-    public CssRule rule(CssProperty... properties) {
+    public CssRule rule(CssPropertyFrag... properties) {
         return new CssRule(build(), properties);
     }
 

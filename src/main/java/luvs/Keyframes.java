@@ -61,9 +61,9 @@ public class Keyframes implements CharSequence {
      */
     public static class KeyframeStep {
         private final String selector; // "0%", "50%", "from", "to"
-        private final CssProperty[] properties;
+        private final CssPropertyFrag[] properties;
 
-        public KeyframeStep(String selector, CssProperty... properties) {
+        public KeyframeStep(String selector, CssPropertyFrag... properties) {
             this.selector = selector;
             this.properties = properties;
         }
@@ -71,7 +71,7 @@ public class Keyframes implements CharSequence {
         @Override
         public String toString() {
             String propsStr = Arrays.stream(properties)
-                .map(CssProperty::toString)
+                .map(CssPropertyFrag::toString)
                 .collect(Collectors.joining(" "));
             return selector + " { " + propsStr + " }";
         }
@@ -84,22 +84,22 @@ public class Keyframes implements CharSequence {
      * Usage: frame(50, transform(translateY(px(-20))))
      * @param percent 0-100
      */
-    public static KeyframeStep frame(int percent, CssProperty... properties) {
+    public static KeyframeStep frame(int percent, CssPropertyFrag... properties) {
         return new KeyframeStep(percent + "%", properties);
     }
 
     /**
      * Keyframe step with string selector (e.g., "0%, 100%" for combined steps).
      */
-    public static KeyframeStep frame(String selector, CssProperty... properties) {
+    public static KeyframeStep frame(String selector, CssPropertyFrag... properties) {
         return new KeyframeStep(selector, properties);
     }
 
-    public static KeyframeStep from(CssProperty... properties) {
+    public static KeyframeStep from(CssPropertyFrag... properties) {
         return new KeyframeStep("from", properties);
     }
 
-    public static KeyframeStep to(CssProperty... properties) {
+    public static KeyframeStep to(CssPropertyFrag... properties) {
         return new KeyframeStep("to", properties);
     }
 
