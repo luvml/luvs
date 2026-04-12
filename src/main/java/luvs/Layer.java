@@ -35,10 +35,10 @@ import java.util.List;
  */
 public non-sealed class Layer implements CssRuleFrag {
 
-    private final String name; // null for anonymous
-    private final Object[] content; // CssRule, CssRules, or nested Layer
+   private final String name; // null for anonymous
+   private final CssRuleFrag[] content; // CssRule, CssRules, or nested Layer
 
-    private Layer(String name, Object[] content) {
+    private Layer(String name, CssRuleFrag[] content) {
         this.name = name;
         this.content = content;
     }
@@ -58,16 +58,23 @@ public non-sealed class Layer implements CssRuleFrag {
     }
 
     private static Layer createLayer(String name, CssRuleFrag[] rules) {
-        List<Object> contentList = new ArrayList<>();
+        List<CssRuleFrag> contentList = new ArrayList<>();
         flattenContent(rules, contentList);
-        return new Layer(name, contentList.toArray());
+        return new Layer(name, contentList.toArray(CssRuleFrag[]::new));
     }
+    
+    /*public CssRuleFrag[]getRules(){
+        List<CssRuleFrag> contentList = new ArrayList<>();
+        flattenContent(content, contentList);
+        return contentList.toArray(CssRuleFrag[]::new);
+    }*/
+    
 
-    private static void flattenContent(CssRuleFrag[] fragments, List<Object> out) {
+    private static void flattenContent(CssRuleFrag[] fragments, List<CssRuleFrag> out) {
         for (CssRuleFrag frag : fragments) {
             switch (frag) {
                 case CssRule rule -> out.add(rule);
-                case CssRules cssRules -> Collections.addAll(out, (Object[]) cssRules.getRules());
+                case CssRules cssRules -> Collections.addAll(out, cssRules.getRules());
                 case Layer layer -> out.add(layer); // nested layers allowed
                 case Layer.LayerOrder ignored -> throw new IllegalArgumentException(
                     "@layer ordering cannot be nested inside @layer");
