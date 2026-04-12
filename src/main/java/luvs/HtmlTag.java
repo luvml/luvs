@@ -49,7 +49,7 @@ public enum HtmlTag implements DelegatedCharSeq,
         return delegatedCharSeqVal();
     }
     
-    public CssRule ____(CssProperty... properties) {
+    public CssRule ____(CssPropertyFrag... properties) {
         return asSelector().____(properties);
     }
 
@@ -221,7 +221,7 @@ public enum HtmlTag implements DelegatedCharSeq,
      * Direct rule creation shortcut.
      * Usage: div.rule(color("red"), ...)
      */
-    public CssRule rule(CssProperty... properties) {
+    public CssRule rule(CssPropertyFrag... properties) {
         return new CssRule(name(), properties);
     }
 }

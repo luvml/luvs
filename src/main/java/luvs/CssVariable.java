@@ -42,7 +42,7 @@ public interface CssVariable extends NamedEnumCharSeq {
      * Usage: primary_color.def("#007bff")
      * Produces: --primary-color: #007bff;
      */
-    default CssProperty def(CharSequence value) {
+    default CssPropertyFrag def(CharSequence value) {
         return new CssProperty(getVarName(), value);
     }
 

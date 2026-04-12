@@ -1153,6 +1153,58 @@ child.____(
 );
 ```
 
+## Property Composition
+
+Compose multiple properties into reusable fragments with `props()`. Useful for vendor prefixes, common patterns, design system utilities.
+
+```java
+// Define helper using props() - clean and concise
+public static CssPropertyFrags webkitLineClamp(int lines) {
+    return props(
+        display("-webkit-box"),
+        prop("-webkit-line-clamp", String.valueOf(lines)),
+        prop("-webkit-box-orient", "vertical"),
+        overflow(HIDDEN)
+    );
+}
+
+// Use alongside regular properties (flattens transparently)
+card_description.____(
+    color("#666"),
+    webkitLineClamp(3),  // Expands to 4 properties
+    margin(rem(1))
+)
+```
+
+**Common patterns:**
+
+```java
+// Flexbox centering
+public static CssPropertyFrags flexCenter() {
+    return props(display(FLEX), justify_content(JC_CENTER), align_items(AI_CENTER));
+}
+
+// Absolute overlay (covers entire parent)
+public static CssPropertyFrags absoluteCover() {
+    return props(position(ABSOLUTE), top(ZERO), right(ZERO), bottom(ZERO), left(ZERO));
+}
+
+// Vendor-prefixed grid
+public static CssPropertyFrags vendorGrid(String cols) {
+    return props(
+        display("-ms-grid"),
+        prop("-ms-grid-columns", cols),
+        display(GRID),
+        grid_template_columns(cols)
+    );
+}
+
+// Fragments can nest
+public static CssPropertyFrags cardBase() {
+    return props(background(WHITE), flexCenter(), padding(rem(2)));  // flexCenter() is another fragment
+}
+```
+
 ## Custom CSS Functions (Pro-Tip)
 
 You can create reusable CSS patterns as Java methods. They work with **static values only** (not runtime), but are great for maintaining consistency:

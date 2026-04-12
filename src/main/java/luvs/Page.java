@@ -30,9 +30,9 @@ import java.util.List;
 public non-sealed class Page implements CssRuleFrag {
 
     private final String selector;  // null, ":left", ":right", ":first", ":blank", or "name"
-    private final CssProperty[] properties;
+    private final CssPropertyFrag[] properties;
 
-    private Page(String selector, CssProperty... properties) {
+    private Page(String selector, CssPropertyFrag... properties) {
         this.selector = selector;
         this.properties = properties;
     }
@@ -40,32 +40,32 @@ public non-sealed class Page implements CssRuleFrag {
     // Factory methods for common page selectors
     
     /** Creates a default @page rule (applies to all pages) */
-    public static Page page(CssProperty... properties) {
+    public static Page page(CssPropertyFrag... properties) {
         return new Page(null, properties);
     }
     
     /** Creates a @page :left rule (left pages in double-sided printing) */
-    public static Page leftPage(CssProperty... properties) {
+    public static Page leftPage(CssPropertyFrag... properties) {
         return new Page(":left", properties);
     }
     
     /** Creates a @page :right rule (right pages in double-sided printing) */
-    public static Page rightPage(CssProperty... properties) {
+    public static Page rightPage(CssPropertyFrag... properties) {
         return new Page(":right", properties);
     }
     
     /** Creates a @page :first rule (first page) */
-    public static Page firstPage(CssProperty... properties) {
+    public static Page firstPage(CssPropertyFrag... properties) {
         return new Page(":first", properties);
     }
     
     /** Creates a @page :blank rule (blank pages) */
-    public static Page blankPage(CssProperty... properties) {
+    public static Page blankPage(CssPropertyFrag... properties) {
         return new Page(":blank", properties);
     }
     
     /** Creates a named @page rule */
-    public static Page namedPage(String name, CssProperty... properties) {
+    public static Page namedPage(String name, CssPropertyFrag... properties) {
         return new Page(name, properties);
     }
 
@@ -83,7 +83,7 @@ public non-sealed class Page implements CssRuleFrag {
         }
 
         sb.append(" {\n");
-        for (CssProperty prop : properties) {
+        for (CssPropertyFrag prop : properties) {
             sb.append("    ").append(prop.delegatedCharSeqVal()).append("\n");
         }
         sb.append("}");

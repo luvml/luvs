@@ -79,7 +79,7 @@ public interface CssClass extends NamedEnumCharSeq,
      * Quick rule creation: .className { props }
      * Usage: center.____(color("red"), ...)
      */
-    default CssRule ____(CssProperty... properties) {
+    default CssRule ____(CssPropertyFrag... properties) {
         return new CssRule(getSelector(), properties);
     }
 }
