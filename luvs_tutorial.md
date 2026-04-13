@@ -16,7 +16,7 @@ Type-safe Java CSS generation with compile-time checking, IDE navigation (ctrl+c
 
 ## Core Concepts
 
-Four main entry points: **P** (properties like `color()`, `margin()`), **V** (values like `px(10)`, `rem(1.5)`, enum constants `FLEX`, `BOLD`), **S** (selector combinators), **Selector** (fluent builder). Supporting types: `CssClass`, `HtmlTag`, `CssRule`, `CssRules`, `CssVariable`, `Keyframes`, `MQ`, `FontFace`, `Supports`, `ContainerQuery`, `Layer`.
+Three main entry points: **P** (properties like `color()`, `margin()`), **V** (values like `px(10)`, `rem(1.5)`, enum constants `FLEX`, `BOLD`), **Selector** (fluent builder). Supporting types: `CssClass`, `HtmlTag`, `CssRule`, `CssRules`, `CssVariable`, `Keyframes`, `MQ`, `FontFace`, `Supports`, `ContainerQuery`, `Layer`.
 
 **Static imports** (use what you need):
 ```java
@@ -141,14 +141,14 @@ btn.and(active).____(...)                // .btn.active { ... }
 tr.and(categorized_row).____(...)        // tr.categorized_row { ... }
 tr.and(categorized_row).hover().____(...)// tr.categorized_row:hover { ... }
 
-// Using S.compound for more control
-compound(tr, categorized_row).hover().____(...)  // tr.categorized_row:hover { ... }
+// Using .and() for compound selectors
+tr.and(categorized_row).hover().____(...)  // tr.categorized_row:hover { ... }
 ```
 
 Grouping (comma-separated selectors):
 
 ```java
-// Using S.grouping
+// Using Selector.grouping
 selector(grouping(
     matches_table.descendant(th),
     matches_table.descendant(td)

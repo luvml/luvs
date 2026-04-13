@@ -29,6 +29,26 @@ public final class Selector implements CharSequence,
         return new Selector(parts);
     }
 
+    /**
+     * Grouping selector: combines selectors with comma separation.
+     * Usage: grouping(h1, h2, h3) → "h1, h2, h3"
+     * Usage: selector(grouping(table.descendant(th), table.descendant(td))).____(...)
+     *        → "table th, table td { ... }"
+     */
+    public static Selector grouping(CharSequence... selectors) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < selectors.length; i++) {
+            if (i > 0) sb.append(", ");
+            CharSequence sel = selectors[i];
+            if (sel instanceof CssClass) {
+                sb.append(((CssClass) sel).getSelector());
+            } else {
+                sb.append(sel);
+            }
+        }
+        return new Selector(new CharSequence[]{sb.toString()});
+    }
+
     public CssRule ____(CssPropertyFrag... properties) {
         return rule(properties);
     }

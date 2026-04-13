@@ -24,6 +24,9 @@ public final class V {
         return Stream.of(values).map(V::toStr).collect(Collectors.joining(", "));
     }
 
+    public static CssUnit pct(Number value) { return new Length(value, LengthUnit.PERCENT); }
+    
+    
     // ========== Length Units ==========
 
     public static CssUnit px(Number value) { return new Length(value, LengthUnit.PX); }
