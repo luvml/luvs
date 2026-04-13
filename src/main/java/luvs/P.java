@@ -55,6 +55,11 @@ public final class P {
     public static CssPropertyFrag color(Color value) { return prop("color", value); }
     public static CssPropertyFrag color(CharSequence value) { return prop("color", value); }
 
+    public static CssPropertyFrag color_(Color value) { return color(value); }
+    public static CssPropertyFrag color_(CharSequence value) { return color(value); }
+    
+    public static CssPropertyFrag colorRgb(int r, int g, int b) { return color(V.rgb(r,g,b)); }
+    
     public static CssPropertyFrag background_color(Color value) { return prop("background-color", value); }
     public static CssPropertyFrag background_color(CharSequence value) { return prop("background-color", value); }
 
@@ -193,6 +198,10 @@ public final class P {
 
     public static CssPropertyFrag width(CharSequence value) { return prop("width", value); }
     public static CssPropertyFrag height(CharSequence value) { return prop("height", value); }
+    
+    public static CssPropertyFrag width_(CharSequence value) { return prop("width", value); }
+    public static CssPropertyFrag height_(CharSequence value) { return prop("height", value); }
+    
     public static CssPropertyFrag min_width(CharSequence value) { return prop("min-width", value); }
     public static CssPropertyFrag min_height(CharSequence value) { return prop("min-height", value); }
     public static CssPropertyFrag max_width(CharSequence value) { return prop("max-width", value); }
